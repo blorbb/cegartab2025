@@ -1,4 +1,4 @@
-(*
+(**
 CEGAR-BOX SAT solver.
 
 We make heavy use of Program Fixpoint/Definition.

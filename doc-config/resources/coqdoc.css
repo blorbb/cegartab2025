@@ -3,6 +3,7 @@
 body {
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
+  font-optical-sizing: auto;
   color: #2d2d2d;
 }
 
@@ -81,7 +82,7 @@ div:empty {
 .inlinecode,
 .code,
 #main pre {
-  font-family: monospace;
+  font-family: "Fira Code", monospace;
 }
 
 .code > br:first-child {

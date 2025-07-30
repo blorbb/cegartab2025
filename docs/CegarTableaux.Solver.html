@@ -7,6 +7,9 @@
   <link href="coqdocjs.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="config.js"></script>
   <script type="text/javascript" src="coqdocjs.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 
 <body onload="document.getElementById('content').focus()">
@@ -30,25 +33,37 @@
 <h1 class="libtitle">CegarTableaux.Solver</h1>
 
 <div class="code">
-<span class="comment">(*<br/>
-CEGAR-BOX&nbsp;SAT&nbsp;solver.<br/>
-<br/>
-We&nbsp;make&nbsp;heavy&nbsp;use&nbsp;of&nbsp;Program&nbsp;Fixpoint/Definition.<br/>
-<br/>
-Program&nbsp;Fixpoint&nbsp;allows&nbsp;us&nbsp;to&nbsp;prove&nbsp;that&nbsp;a&nbsp;fixpoint&nbsp;terminates&nbsp;with&nbsp;a&nbsp;custom<br/>
-well-founded&nbsp;measurement,&nbsp;and&nbsp;generates&nbsp;obligations&nbsp;to&nbsp;show&nbsp;that&nbsp;every<br/>
-recursive&nbsp;call&nbsp;is&nbsp;indeed&nbsp;a&nbsp;strict&nbsp;decrease&nbsp;of&nbsp;the&nbsp;measurement.<br/>
-<br/>
-We&nbsp;use&nbsp;a&nbsp;Notation&nbsp;for&nbsp;the&nbsp;mutually&nbsp;recursive&nbsp;<span class="inlinecode"><span class="id" title="var">cegar_box_rec</span></span>.&nbsp;This&nbsp;is&nbsp;because<br/>
-we&nbsp;need&nbsp;to&nbsp;be&nbsp;able&nbsp;to&nbsp;see&nbsp;'through'&nbsp;this&nbsp;function&nbsp;to&nbsp;the&nbsp;actual&nbsp;<span class="inlinecode"><span class="id" title="var">process_dias</span></span><br/>
-recursive&nbsp;call.&nbsp;This&nbsp;way,&nbsp;we&nbsp;can&nbsp;actually&nbsp;prove&nbsp;that&nbsp;this&nbsp;recursive&nbsp;call<br/>
-is&nbsp;decreasing.&nbsp;A&nbsp;let&nbsp;statement&nbsp;or&nbsp;Definition&nbsp;might&nbsp;work,&nbsp;but&nbsp;requires&nbsp;writing<br/>
-some&nbsp;really&nbsp;big&nbsp;types&nbsp;which&nbsp;is&nbsp;annoying.<br/>
-<br/>
-Program&nbsp;also&nbsp;allows&nbsp;us&nbsp;to&nbsp;leave&nbsp;'holes'&nbsp;in&nbsp;places&nbsp;where&nbsp;propositions&nbsp;are&nbsp;expected.<br/>
-We&nbsp;can&nbsp;then&nbsp;fill&nbsp;in&nbsp;these&nbsp;holes&nbsp;as&nbsp;obligations,&nbsp;so&nbsp;that&nbsp;we&nbsp;can&nbsp;actually<br/>
-use&nbsp;the&nbsp;proof&nbsp;language&nbsp;rather&nbsp;than&nbsp;trying&nbsp;to&nbsp;do&nbsp;some&nbsp;stuff&nbsp;with&nbsp;function&nbsp;application.<br/>
-*)</span><br/>
+</div>
+
+<div class="doc">
+CEGAR-BOX SAT solver.
+
+<div class="paragraph"> </div>
+
+We make heavy use of Program Fixpoint/Definition.
+
+<div class="paragraph"> </div>
+
+Program Fixpoint allows us to prove that a fixpoint terminates with a custom
+well-founded measurement, and generates obligations to show that every
+recursive call is indeed a strict decrease of the measurement.
+
+<div class="paragraph"> </div>
+
+We use a Notation for the mutually recursive <span class="inlinecode"><a class="idref" href="CegarTableaux.Solver.html#cegar_box_rec"><span class="id" title="abbreviation">cegar_box_rec</span></a></span>. This is because
+we need to be able to see 'through' this function to the actual <span class="inlinecode"><a class="idref" href="CegarTableaux.Solver.html#process_dias"><span class="id" title="definition">process_dias</span></a></span>
+recursive call. This way, we can actually prove that this recursive call
+is decreasing. A let statement or Definition might work, but requires writing
+some really big types which is annoying.
+
+<div class="paragraph"> </div>
+
+Program also allows us to leave 'holes' in places where propositions are expected.
+We can then fill in these holes as obligations, so that we can actually
+use the proof language rather than trying to do some stuff with function application.
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">List</span> <span class="id" title="library">SetoidList</span> <span class="id" title="library">SetoidPermutation</span>.<br/>

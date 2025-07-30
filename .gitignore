@@ -1,3 +1,7 @@
+makefile.rocq
+makefile.rocq.conf
+/html
+
 .*.aux
 .*.d
 *.a

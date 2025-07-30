@@ -2,8 +2,8 @@ EXTRA_DIR:= doc-config
 COQDOCFLAGS:= \
   --toc --toc-depth 2 --html --interpolate \
 	-d docs \
-  --index indexpage --no-lib-name --parse-comments
-#   --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
+  --index indexpage --no-lib-name --parse-comments \
+  --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
 export COQDOCFLAGS
 PUBLIC_URL="https://blorbb.github.io/cegartab2025"
 SUBDIR_ROOTS := theories
@@ -22,7 +22,7 @@ doc: makefile.rocq
 	COQDOCEXTRAFLAGS='--external $(PUBLIC_URL)'
 	@$(MAKE) -f makefile.rocq html
 	cp html/* docs
-# 	cp $(EXTRA_DIR)/resources/* docs
+	cp $(EXTRA_DIR)/resources/* docs
 
 -include makefile.rocq
 

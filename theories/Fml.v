@@ -1,5 +1,4 @@
 From Stdlib Require List.
-
 From CegarTableaux Require Kripke Lit.
 
 
@@ -24,10 +23,5 @@ Fixpoint force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
   | Dia  A   => exists nbr, R w0 nbr /\ force M nbr A
   end.
 
-
-Definition fmls_force {W} {R} (M : @Kripke.t W R) (w0 : W) (fmls : list t) : Prop :=
-  forall (phi : t), List.In phi fmls -> force M w0 phi.
-
-
-Definition fmls_satisfiable (fmls : list t) : Prop :=
-  exists W R (M : @Kripke.t W R) (w0 : W), fmls_force M w0 fmls.
+Definition satisfiable (fml : t) : Prop :=
+  exists W R (M : @Kripke.t W R) (w0 : W), force M w0 fml.

@@ -26,10 +26,6 @@ Section Satisfiability.
     end.
 
 
-  Definition nnfs_force {W} {R} (M : @Kripke.t W R) (w0 : W) (phis : list t) : Prop :=
-    forall (phi : t), List.In phi phis -> force M w0 phi.
-
-
   Definition satisfiable (phi : t) : Prop :=
     exists W R (M : @Kripke.t W R) (w0 : W), force M w0 phi.
 
@@ -149,36 +145,6 @@ Section Correctness.
     - setoid_rewrite IHA. reflexivity.
     (* <>A *)
     - setoid_rewrite IHA. reflexivity.
-  Qed.
-
-
-  Theorem force_fmls_iff_force_nnfs :
-    forall {W} {R} (M : @Kripke.t W R) (w0 : W) (fmls : list Fml.t),
-    Fml.fmls_force M w0 fmls <-> nnfs_force M w0 (List.map from_fml fmls).
-  Proof.
-    intros W R M w0 fmls.
-    induction fmls as [|first rest IHrest].
-    (* base case *)
-    - simpl.
-      unfold Fml.fmls_force. unfold nnfs_force.
-      simpl. tauto.
-    (* induction on (first :: rest) *)
-    - split.
-      (* fml sat -> nnf sat *)
-      + intros Hfml_force phi_nnf Hin.
-        destruct Hin as [Hfirst | Hrest].
-        * rewrite <- Hfirst. 
-          apply force_fml_iff_force_nnf.
-          apply Hfml_force. now left.
-        * apply IHrest; try assumption.
-          intros phi Hphi_in_rest.
-          apply Hfml_force. now right.
-      (* nnf sat -> fml sat *)
-      + intros Hnnf_force phi Hphi_in.
-        specialize (Hnnf_force (from_fml phi)).
-        rewrite force_fml_iff_force_nnf. apply Hnnf_force.
-        rewrite List.in_map_iff.
-        exists phi. tauto.
   Qed.
 End Correctness.
 

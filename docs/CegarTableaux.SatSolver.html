@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>CegarTableaux.SatSolver</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">CegarTableaux.SatSolver</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">List</span> <span class="id" title="library">SetoidList</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">CegarTableaux</span> <span class="id" title="keyword">Require</span> <a class="idref" href="CegarTableaux.CplClause.html#"><span class="id" title="library">CplClause</span></a> <a class="idref" href="CegarTableaux.Assumptions.html#"><span class="id" title="library">Assumptions</span></a> <a class="idref" href="CegarTableaux.Lit.html#"><span class="id" title="library">Lit</span></a> <a class="idref" href="CegarTableaux.Cnf.html#"><span class="id" title="library">Cnf</span></a> <a class="idref" href="CegarTableaux.Valuation.html#"><span class="id" title="library">Valuation</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">CegarTableaux</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="CegarTableaux.Utils.html#"><span class="id" title="library">Utils</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Permutation</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">List.ListNotations</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">list_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="Solution" class="idref" href="#Solution"><span class="id" title="module">Solution</span></a>.<br/>
+</div>
+
+<div class="doc">
+The return type of a SAT-solver. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <a id="Solution.t" class="idref" href="#Solution.t"><span class="id" title="definition, inductive"><span id="Solution.t_rect" class="id"><span id="Solution.t_ind" class="id"><span id="Solution.t_rec" class="id"><span id="Solution.t_sind" class="id">t</span></span></span></span></span></a> : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Returns valuations that make the formula satisfied. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;| <a id="Solution.Sat" class="idref" href="#Solution.Sat"><span class="id" title="constructor">Sat</span></a> (<a id="val:3" class="idref" href="#val:3"><span class="id" title="binder">val</span></a> : <a class="idref" href="CegarTableaux.Valuation.html#t"><span class="id" title="definition">Valuation.t</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Returns assumptions that maintain unsatisfiability. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;| <a id="Solution.Unsat" class="idref" href="#Solution.Unsat"><span class="id" title="constructor">Unsat</span></a> (<a id="core:4" class="idref" href="#core:4"><span class="id" title="binder">core</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="Solution.is_sat" class="idref" href="#Solution.is_sat"><span class="id" title="definition">is_sat</span></a> <a id="t:5" class="idref" href="#t:5"><span class="id" title="binder">t</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="CegarTableaux.SatSolver.html#t:5"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Solution.Sat"><span class="id" title="constructor">Sat</span></a> <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Solution.Unsat"><span class="id" title="constructor">Unsat</span></a> <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="Solution.is_unsat" class="idref" href="#Solution.is_unsat"><span class="id" title="definition">is_unsat</span></a> <a id="t:7" class="idref" href="#t:7"><span class="id" title="binder">t</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="CegarTableaux.SatSolver.html#t:7"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Solution.Sat"><span class="id" title="constructor">Sat</span></a> <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Solution.Unsat"><span class="id" title="constructor">Unsat</span></a> <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="CegarTableaux.SatSolver.html#Solution"><span class="id" title="module">Solution</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A SAT-solver oracle. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Parameter</span> <a id="t" class="idref" href="#t"><span class="id" title="axiom">t</span></a> : <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a id="make" class="idref" href="#make"><span class="id" title="axiom">make</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Add a clause to the solver, returning the new solver.
+
+<div class="paragraph"> </div>
+
+  Note that on the extraction side, minisat will be slightly incorrect.
+  Minisat will *mutate* the existing solver, which means that the input
+  solver must *never* be used again for everything to be clash_free.
+
+<div class="paragraph"> </div>
+
+  I'm not sure if there is a way to enforce this in Coq (affine types?),
+  but we can manually check that the CEGAR-tableaux algorithm will never
+  use an 'old' SAT-solver.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Parameter</span> <a id="add_clause" class="idref" href="#add_clause"><span class="id" title="axiom">add_clause</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a id="solve_with_assumptions" class="idref" href="#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="inductive">Solution.t</span></a>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Shortcut&nbsp;to&nbsp;make&nbsp;a&nbsp;new&nbsp;SAT-solver&nbsp;with&nbsp;these&nbsp;clauses&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <a id="make_with_clauses" class="idref" href="#make_with_clauses"><span class="id" title="definition">make_with_clauses</span></a> (<a id="clauses:17" class="idref" href="#clauses:17"><span class="id" title="binder">clauses</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>) : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="definition">List.fold_left</span> <a class="idref" href="CegarTableaux.SatSolver.html#add_clause"><span class="id" title="axiom">add_clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clauses:17"><span class="id" title="variable">clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#make"><span class="id" title="axiom">make</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1"></a><h1 class="section">Correctness</h1>
+
+<div class="paragraph"> </div>
+
+ All clauses which have been added to this solver
+
+<div class="paragraph"> </div>
+
+  Not needed by the algorithm, only by the proofs.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Parameter</span> <a id="clauses_of" class="idref" href="#clauses_of"><span class="id" title="axiom">clauses_of</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The assumptions and clauses of the solver combined. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="solved_clauses" class="idref" href="#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> (<a id="solver:20" class="idref" href="#solver:20"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:21" class="idref" href="#assumptions:21"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#from_assumptions"><span class="id" title="definition">Cnf.from_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:21"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clauses_of"><span class="id" title="axiom">clauses_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:20"><span class="id" title="variable">solver</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="atms_of" class="idref" href="#atms_of"><span class="id" title="definition">atms_of</span></a> (<a id="solver:22" class="idref" href="#solver:22"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:23" class="idref" href="#assumptions:23"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#atms_of"><span class="id" title="definition">Cnf.atms_of</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:22"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:23"><span class="id" title="variable">assumptions</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="every_valuation" class="idref" href="#every_valuation"><span class="id" title="definition">every_valuation</span></a> (<a id="solver:24" class="idref" href="#solver:24"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:25" class="idref" href="#assumptions:25"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Valuation.html#t"><span class="id" title="definition">Valuation.t</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Valuation.html#every_valuation_of_atms"><span class="id" title="definition">Valuation.every_valuation_of_atms</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:24"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:25"><span class="id" title="variable">assumptions</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="In" class="idref" href="#In"><span class="id" title="definition">In</span></a> (<a id="x:26" class="idref" href="#x:26"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="solver:27" class="idref" href="#solver:27"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:28" class="idref" href="#assumptions:28"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#In"><span class="id" title="definition">Cnf.In</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#x:26"><span class="id" title="variable">x</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:27"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:28"><span class="id" title="variable">assumptions</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="clause_atms_in" class="idref" href="#clause_atms_in"><span class="id" title="definition">clause_atms_in</span></a> (<a id="clause:29" class="idref" href="#clause:29"><span class="id" title="binder">clause</span></a> : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a>) (<a id="solver:30" class="idref" href="#solver:30"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:31" class="idref" href="#assumptions:31"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <a id="x:32" class="idref" href="#x:32"><span class="id" title="binder">x</span></a>, <a class="idref" href="CegarTableaux.CplClause.html#In"><span class="id" title="definition">CplClause.In</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#x:32"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:29"><span class="id" title="variable">clause</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#x:32"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:30"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:31"><span class="id" title="variable">assumptions</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Adding a clause to the solver adds it to the <span class="inlinecode"><a class="idref" href="CegarTableaux.SatSolver.html#clauses_of"><span class="id" title="axiom">clauses_of</span></a></span>. 
+</div>
+<div class="code">
+<span class="comment">(*&nbsp;Axiom&nbsp;add_clause_cons&nbsp;:<br/>
+&nbsp;&nbsp;forall&nbsp;(s&nbsp;:&nbsp;t)&nbsp;(clause&nbsp;:&nbsp;CplClause.t),&nbsp;clauses_of&nbsp;(add_clause&nbsp;s&nbsp;clause)&nbsp;=&nbsp;clause&nbsp;::&nbsp;clauses_of&nbsp;s.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;add&nbsp;axioms&nbsp;about&nbsp;the&nbsp;valuation&nbsp;and&nbsp;unsat&nbsp;core&nbsp;specifically.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <a id="solver_axioms" class="idref" href="#solver_axioms"><span class="id" title="record">solver_axioms</span></a> (<a id="solver:33" class="idref" href="#solver:33"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) :=<br/>
+{<br/>
+&nbsp;&nbsp;<a id="add_clause_cons" class="idref" href="#add_clause_cons"><span class="id" title="projection">add_clause_cons</span></a> : <span class="id" title="keyword">forall</span> (<a id="clause:35" class="idref" href="#clause:35"><span class="id" title="binder">clause</span></a> : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#clauses_of"><span class="id" title="axiom">clauses_of</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#add_clause"><span class="id" title="axiom">add_clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:35"><span class="id" title="variable">clause</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:35"><span class="id" title="variable">clause</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clauses_of"><span class="id" title="axiom">clauses_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a>;<br/>
+<br/>
+&nbsp;&nbsp;<a id="valuation_clash_free" class="idref" href="#valuation_clash_free"><span class="id" title="projection">valuation_clash_free</span></a> : <span class="id" title="keyword">forall</span> <a id="assumptions:37" class="idref" href="#assumptions:37"><span class="id" title="binder">assumptions</span></a> <a id="val:38" class="idref" href="#val:38"><span class="id" title="binder">val</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#Sat"><span class="id" title="constructor">Solution.Sat</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#val:38"><span class="id" title="variable">val</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:37"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Valuation.html#clash_free"><span class="id" title="definition">Valuation.clash_free</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#val:38"><span class="id" title="variable">val</span></a>;<br/>
+<br/>
+&nbsp;&nbsp;<a id="valuation_in_clauses" class="idref" href="#valuation_in_clauses"><span class="id" title="projection">valuation_in_clauses</span></a> : <span class="id" title="keyword">forall</span> <a id="assumptions:40" class="idref" href="#assumptions:40"><span class="id" title="binder">assumptions</span></a> <a id="val:41" class="idref" href="#val:41"><span class="id" title="binder">val</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#Sat"><span class="id" title="constructor">Solution.Sat</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#val:41"><span class="id" title="variable">val</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:40"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <a id="x:42" class="idref" href="#x:42"><span class="id" title="binder">x</span></a>, <a class="idref" href="CegarTableaux.Valuation.html#In"><span class="id" title="definition">Valuation.In</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#x:42"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#val:41"><span class="id" title="variable">val</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#x:42"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:40"><span class="id" title="variable">assumptions</span></a>;<br/>
+<br/>
+&nbsp;&nbsp;<a id="core_subset_assumptions" class="idref" href="#core_subset_assumptions"><span class="id" title="projection">core_subset_assumptions</span></a> : <span class="id" title="keyword">forall</span> <a id="assumptions:44" class="idref" href="#assumptions:44"><span class="id" title="binder">assumptions</span></a> <a id="core:45" class="idref" href="#core:45"><span class="id" title="binder">core</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#Unsat"><span class="id" title="constructor">Solution.Unsat</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#core:45"><span class="id" title="variable">core</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:44"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">List.incl</span> <a class="idref" href="CegarTableaux.SatSolver.html#core:45"><span class="id" title="variable">core</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:44"><span class="id" title="variable">assumptions</span></a>;<br/>
+<br/>
+&nbsp;&nbsp;<a id="solution_correctness" class="idref" href="#solution_correctness"><span class="id" title="projection">solution_correctness</span></a> : <span class="id" title="keyword">forall</span> <a id="assumptions:47" class="idref" href="#assumptions:47"><span class="id" title="binder">assumptions</span></a>, <span class="id" title="keyword">match</span> <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:47"><span class="id" title="variable">assumptions</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;this&nbsp;valuation&nbsp;makes&nbsp;it&nbsp;true&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Sat"><span class="id" title="constructor">Solution.Sat</span></a> <span class="id" title="var">val</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <a id="W:48" class="idref" href="#W:48"><span class="id" title="binder">W</span></a> <a id="R:49" class="idref" href="#R:49"><span class="id" title="binder">R</span></a> (<a id="M:50" class="idref" href="#M:50"><span class="id" title="binder">M</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#W:48"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#R:49"><span class="id" title="variable">R</span></a>) (<a id="w0:51" class="idref" href="#w0:51"><span class="id" title="binder">w0</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#W:48"><span class="id" title="variable">W</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Valuation.html#matches_kripke_valuation"><span class="id" title="definition">Valuation.matches_kripke_valuation</span></a> <span class="id" title="var">val</span> <a class="idref" href="CegarTableaux.SatSolver.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#w0:51"><span class="id" title="variable">w0</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">Cnf.force</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#w0:51"><span class="id" title="variable">w0</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:47"><span class="id" title="variable">assumptions</span></a>)<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;solver&nbsp;clauses&nbsp;++&nbsp;*unsat&nbsp;core*&nbsp;is&nbsp;also&nbsp;unsat&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;the&nbsp;fact&nbsp;that&nbsp;solver&nbsp;++&nbsp;*assumptions*&nbsp;is&nbsp;unsat&nbsp;follows&nbsp;from&nbsp;this.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.SatSolver.html#Unsat"><span class="id" title="constructor">Solution.Unsat</span></a> <span class="id" title="var">core</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#unsatisfiable"><span class="id" title="definition">Cnf.unsatisfiable</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:33"><span class="id" title="variable">solver</span></a> <span class="id" title="var">core</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The empty SAT-solver contains no clauses. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Axiom</span> <a id="make_is_empty" class="idref" href="#make_is_empty"><span class="id" title="axiom">make_is_empty</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#clauses_of"><span class="id" title="axiom">clauses_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#make"><span class="id" title="axiom">make</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <span class="id" title="notation">[]</span>.<br/>
+<span class="id" title="keyword">Axiom</span> <a id="axioms_make" class="idref" href="#axioms_make"><span class="id" title="axiom">axioms_make</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#make"><span class="id" title="axiom">make</span></a>.<br/>
+<span class="id" title="keyword">Axiom</span> <a id="axioms_ind" class="idref" href="#axioms_ind"><span class="id" title="axiom">axioms_ind</span></a> : <span class="id" title="keyword">forall</span> <a id="solver:57" class="idref" href="#solver:57"><span class="id" title="binder">solver</span></a> <a id="clause:58" class="idref" href="#clause:58"><span class="id" title="binder">clause</span></a>,<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:57"><span class="id" title="variable">solver</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#add_clause"><span class="id" title="axiom">add_clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:57"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:58"><span class="id" title="variable">clause</span></a>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+make_with_clauses also satisfies solver axioms. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Lemma</span> <a id="axioms_clauses'" class="idref" href="#axioms_clauses'"><span class="id" title="lemma">axioms_clauses'</span></a> : <span class="id" title="keyword">forall</span> (<a id="solver:61" class="idref" href="#solver:61"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="phi:62" class="idref" href="#phi:62"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:61"><span class="id" title="variable">solver</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> (<span class="id" title="definition">List.fold_left</span> <a class="idref" href="CegarTableaux.SatSolver.html#add_clause"><span class="id" title="axiom">add_clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:62"><span class="id" title="variable">phi</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:61"><span class="id" title="variable">solver</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">solver</span> <span class="id" title="var">phi</span>. <span class="id" title="var">revert</span> <span class="id" title="var">solver</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">head</span> <span class="id" title="var">tail</span> <span class="id" title="var">IH</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">solver</span> <span class="id" title="var">Hsolver</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.SatSolver.html#axioms_ind"><span class="id" title="axiom">axioms_ind</span></a>. <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="axioms_clauses" class="idref" href="#axioms_clauses"><span class="id" title="lemma">axioms_clauses</span></a> : <span class="id" title="keyword">forall</span> (<a id="phi:63" class="idref" href="#phi:63"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>), <a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#make_with_clauses"><span class="id" title="definition">make_with_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:63"><span class="id" title="variable">phi</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">phi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="CegarTableaux.SatSolver.html#make_with_clauses"><span class="id" title="definition">make_with_clauses</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.SatSolver.html#axioms_clauses'"><span class="id" title="lemma">axioms_clauses'</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.SatSolver.html#axioms_make"><span class="id" title="axiom">axioms_make</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A SAT valuation is in every valuation of the solver. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="valuation_in_every_valuation_of" class="idref" href="#valuation_in_every_valuation_of"><span class="id" title="lemma">valuation_in_every_valuation_of</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<a id="solver:64" class="idref" href="#solver:64"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:65" class="idref" href="#assumptions:65"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) (<a id="valuation:66" class="idref" href="#valuation:66"><span class="id" title="binder">valuation</span></a> : <a class="idref" href="CegarTableaux.Valuation.html#t"><span class="id" title="definition">Valuation.t</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:64"><span class="id" title="variable">solver</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#Sat"><span class="id" title="constructor">Solution.Sat</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#valuation:66"><span class="id" title="variable">valuation</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:64"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:65"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="inductive">SetoidList.InA</span> <a class="idref" href="CegarTableaux.Valuation.html#eq"><span class="id" title="definition">Valuation.eq</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#valuation:66"><span class="id" title="variable">valuation</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="CegarTableaux.SatSolver.html#every_valuation"><span class="id" title="definition">every_valuation</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:64"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:65"><span class="id" title="variable">assumptions</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">solver</span> <span class="id" title="var">assumptions</span> <span class="id" title="var">val</span> <span class="id" title="var">Hsolver</span> <span class="id" title="var">Hsat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="CegarTableaux.SatSolver.html#every_valuation"><span class="id" title="definition">every_valuation</span></a>, <a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">atms</span> := <a class="idref" href="CegarTableaux.Cnf.html#atms_of"><span class="id" title="definition">Cnf.atms_of</span></a> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="CegarTableaux.SatSolver.html#valuation_clash_free"><span class="id" title="method">valuation_clash_free</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Hsat</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">Hsound</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Valuation.html#val_of_atms_in_every_valuation"><span class="id" title="lemma">Valuation.val_of_atms_in_every_valuation</span></a>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;atms&nbsp;is&nbsp;permutation&nbsp;of&nbsp;atms&nbsp;of&nbsp;val&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">Permutation.NoDup_Permutation</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">atms</span>, <a class="idref" href="CegarTableaux.Cnf.html#atms_of"><span class="id" title="definition">Cnf.atms_of</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.NoDup_nodup</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Valuation.html#atms_of_nodup"><span class="id" title="lemma">Valuation.atms_of_nodup</span></a>. <span class="id" title="tactic">exact</span> <span class="id" title="var">Hsound</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">setoid_rewrite</span> (<a class="idref" href="CegarTableaux.SatSolver.html#valuation_in_clauses"><span class="id" title="method">valuation_in_clauses</span></a> <span class="id" title="var">assumptions</span> <span class="id" title="var">val</span> <span class="id" title="var">Hsat</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">setoid_rewrite</span> <a class="idref" href="CegarTableaux.Cnf.html#in_atms_of"><span class="id" title="lemma">Cnf.in_atms_of</span></a>. <span class="id" title="tactic">fold</span> <span class="id" title="var">atms</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;solver&nbsp;with&nbsp;an&nbsp;added&nbsp;clause&nbsp;that&nbsp;contains&nbsp;no&nbsp;new&nbsp;atoms&nbsp;has&nbsp;the&nbsp;same&nbsp;set&nbsp;of&nbsp;atoms&nbsp;*)</span><br/>
+<span class="id" title="keyword">Lemma</span> <a id="add_no_new_atms" class="idref" href="#add_no_new_atms"><span class="id" title="lemma">add_no_new_atms</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<a id="solver:67" class="idref" href="#solver:67"><span class="id" title="binder">solver</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="clause:68" class="idref" href="#clause:68"><span class="id" title="binder">clause</span></a> : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a>) (<a id="assumptions:69" class="idref" href="#assumptions:69"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:67"><span class="id" title="variable">solver</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#clause_atms_in"><span class="id" title="definition">clause_atms_in</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:68"><span class="id" title="variable">clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:67"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:69"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="inductive">Permutation</span> (<a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:67"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:69"><span class="id" title="variable">assumptions</span></a>) (<a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#add_clause"><span class="id" title="axiom">add_clause</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver:67"><span class="id" title="variable">solver</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#clause:68"><span class="id" title="variable">clause</span></a>) <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:69"><span class="id" title="variable">assumptions</span></a>).<br/>
+<span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">solver</span> <span class="id" title="var">new_clause</span> <span class="id" title="var">assumptions</span> <span class="id" title="var">Hsolver</span> <span class="id" title="var">Hclause_incl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a>, <a class="idref" href="CegarTableaux.SatSolver.html#solved_clauses"><span class="id" title="definition">solved_clauses</span></a> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.SatSolver.html#add_clause_cons"><span class="id" title="method">add_clause_cons</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">NoDup_Permutation</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.NoDup_nodup</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.NoDup_nodup</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;in&nbsp;assumptions&nbsp;++&nbsp;clauses&nbsp;-&gt;&nbsp;in&nbsp;assumptions&nbsp;++&nbsp;new_clause&nbsp;::&nbsp;clauses&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">Hx_in_solver</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;simplify&nbsp;nodup&nbsp;and&nbsp;flatmap&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.nodup_In</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.nodup_In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hx_in_solver</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hx_in_solver</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hx_in_solver</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">clause</span> [<span class="id" title="var">Hclause_in_clauses</span> <span class="id" title="var">Hx_in_clause</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">clause</span>. <span class="id" title="tactic">split</span>...<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;in&nbsp;a&nbsp;++&nbsp;b&nbsp;-&gt;&nbsp;in&nbsp;a&nbsp;++&nbsp;c&nbsp;::&nbsp;b&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">List.in_app_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hclause_in_clauses</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hclause_in_clauses</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hclause_in_assumps</span> | <span class="id" title="var">Hclause_in_solver</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_app_iff</span>. <span class="id" title="var">now</span> <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_app_iff</span>. <span class="id" title="tactic">right</span>. <span class="id" title="var">now</span> <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_cons</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;in&nbsp;assumptions&nbsp;++&nbsp;clauses&nbsp;&lt;-&nbsp;in&nbsp;assumptions&nbsp;++&nbsp;new_clause&nbsp;::&nbsp;clauses&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">Hx_in_solver'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;simplify&nbsp;nodup&nbsp;and&nbsp;flatmap&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.nodup_In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hx_in_solver'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hx_in_solver'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hx_in_solver'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">clause</span> [<span class="id" title="var">Hclause_in_clauses</span> <span class="id" title="var">Hx_in_clause</span>]].<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;split&nbsp;into&nbsp;3&nbsp;cases,&nbsp;two&nbsp;are&nbsp;almost&nbsp;identical,&nbsp;so&nbsp;reorder&nbsp;to&nbsp;simplify&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">List.in_app_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hclause_in_clauses</span>. <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hclause_in_clauses</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#or_comm"><span class="id" title="lemma">or_comm</span></a>, <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#or_assoc"><span class="id" title="lemma">or_assoc</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Hclause_in_clauses</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hclause_in_clauses</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Heq_new</span> | <span class="id" title="var">Hin_existing</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;x&nbsp;in&nbsp;new&nbsp;clause&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">subst</span> <span class="id" title="var">clause</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="CegarTableaux.SatSolver.html#In"><span class="id" title="definition">In</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">Hclause_incl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Cnf.html#in_atms_of"><span class="id" title="lemma">Cnf.in_atms_of</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Hclause_incl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;x&nbsp;in&nbsp;solver&nbsp;or&nbsp;assumptions&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.nodup_In</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">clause</span>. <span class="id" title="tactic">split</span>... <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_app_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intuition</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If the core is unsatisfiable, then all assumptions are unsatisfiable. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="unsat_core_unsat_assumptions" class="idref" href="#unsat_core_unsat_assumptions"><span class="id" title="lemma">unsat_core_unsat_assumptions</span></a> : <span class="id" title="keyword">forall</span> (<a id="phi:70" class="idref" href="#phi:70"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>) (<a id="assumptions:71" class="idref" href="#assumptions:71"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>) (<a id="core:72" class="idref" href="#core:72"><span class="id" title="binder">core</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>),<br/>
+&nbsp;&nbsp;<span class="id" title="definition">List.incl</span> <a class="idref" href="CegarTableaux.SatSolver.html#core:72"><span class="id" title="variable">core</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:71"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#unsatisfiable"><span class="id" title="definition">Cnf.unsatisfiable</span></a> (<a class="idref" href="CegarTableaux.Cnf.html#from_assumptions"><span class="id" title="definition">Cnf.from_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#core:72"><span class="id" title="variable">core</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:70"><span class="id" title="variable">phi</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#unsatisfiable"><span class="id" title="definition">Cnf.unsatisfiable</span></a> (<a class="idref" href="CegarTableaux.Cnf.html#from_assumptions"><span class="id" title="definition">Cnf.from_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:71"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:70"><span class="id" title="variable">phi</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Checking that the axioms are reasonable. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="solver_correctness" class="idref" href="#solver_correctness"><span class="id" title="lemma">solver_correctness</span></a> : <span class="id" title="keyword">forall</span> (<a id="phi:73" class="idref" href="#phi:73"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>) (<a id="assumptions:74" class="idref" href="#assumptions:74"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#satisfiable"><span class="id" title="definition">Cnf.satisfiable</span></a> (<a class="idref" href="CegarTableaux.Cnf.html#from_assumptions"><span class="id" title="definition">Cnf.from_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:74"><span class="id" title="variable">assumptions</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:73"><span class="id" title="variable">phi</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#is_sat"><span class="id" title="definition">Solution.is_sat</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> (<a class="idref" href="CegarTableaux.SatSolver.html#make_with_clauses"><span class="id" title="definition">make_with_clauses</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:73"><span class="id" title="variable">phi</span></a>) <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:74"><span class="id" title="variable">assumptions</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">phi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">head</span> <span class="id" title="var">tail</span> <span class="id" title="var">IHtail</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">assumptions</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.Utils.html#contrapositive"><span class="id" title="lemma">contrapositive</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Hunsat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (@<a class="idref" href="CegarTableaux.SatSolver.html#solution_correctness"><span class="id" title="method">solution_correctness</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#make"><span class="id" title="axiom">make</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#axioms_make"><span class="id" title="axiom">axioms_make</span></a> <span class="id" title="var">assumptions</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">s</span> := <a class="idref" href="CegarTableaux.SatSolver.html#solve_with_assumptions"><span class="id" title="axiom">solve_with_assumptions</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#make"><span class="id" title="axiom">make</span></a> <span class="id" title="var">assumptions</span>) <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;solution&nbsp;must&nbsp;be&nbsp;unsat&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">val</span> | <span class="id" title="var">core</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hunsat</span>. <span class="id" title="var">contradiction</span>. }<br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="subset_unsat_unsat" class="idref" href="#subset_unsat_unsat"><span class="id" title="lemma">subset_unsat_unsat</span></a> : <span class="id" title="keyword">forall</span> (<a id="phi:75" class="idref" href="#phi:75"><span class="id" title="binder">phi</span></a> <a id="psi:76" class="idref" href="#psi:76"><span class="id" title="binder">psi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">Cnf.t</span></a>),<br/>
+&nbsp;&nbsp;<span class="id" title="definition">List.incl</span> <a class="idref" href="CegarTableaux.SatSolver.html#phi:75"><span class="id" title="variable">phi</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#psi:76"><span class="id" title="variable">psi</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#unsatisfiable"><span class="id" title="definition">Cnf.unsatisfiable</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#phi:75"><span class="id" title="variable">phi</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#unsatisfiable"><span class="id" title="definition">Cnf.unsatisfiable</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#psi:76"><span class="id" title="variable">psi</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;if&nbsp;two&nbsp;solvers&nbsp;have&nbsp;the&nbsp;same&nbsp;set&nbsp;of&nbsp;atoms,&nbsp;they&nbsp;must&nbsp;have&nbsp;the&nbsp;same&nbsp;set&nbsp;of&nbsp;valuations&nbsp;*)</span><br/>
+<span class="id" title="keyword">Lemma</span> <a id="same_atms_valuation_set" class="idref" href="#same_atms_valuation_set"><span class="id" title="lemma">same_atms_valuation_set</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<a id="solvera:77" class="idref" href="#solvera:77"><span class="id" title="binder">solvera</span></a> <a id="solverb:78" class="idref" href="#solverb:78"><span class="id" title="binder">solverb</span></a> : <a class="idref" href="CegarTableaux.SatSolver.html#t"><span class="id" title="axiom">t</span></a>) (<a id="assumptions:79" class="idref" href="#assumptions:79"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="CegarTableaux.Assumptions.html#t"><span class="id" title="definition">Assumptions.t</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solvera:77"><span class="id" title="variable">solvera</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solver_axioms"><span class="id" title="class">solver_axioms</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solverb:78"><span class="id" title="variable">solverb</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="inductive">Permutation.Permutation</span> (<a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solvera:77"><span class="id" title="variable">solvera</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:79"><span class="id" title="variable">assumptions</span></a>) (<a class="idref" href="CegarTableaux.SatSolver.html#atms_of"><span class="id" title="definition">atms_of</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solverb:78"><span class="id" title="variable">solverb</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:79"><span class="id" title="variable">assumptions</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="inductive">Permutation.Permutation</span> (<a class="idref" href="CegarTableaux.SatSolver.html#every_valuation"><span class="id" title="definition">every_valuation</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solvera:77"><span class="id" title="variable">solvera</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:79"><span class="id" title="variable">assumptions</span></a>) (<a class="idref" href="CegarTableaux.SatSolver.html#every_valuation"><span class="id" title="definition">every_valuation</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#solverb:78"><span class="id" title="variable">solverb</span></a> <a class="idref" href="CegarTableaux.SatSolver.html#assumptions:79"><span class="id" title="variable">assumptions</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="comment">(*<br/>
+<br/>
+axioms:<br/>
+-&nbsp;unsat&nbsp;core&nbsp;is&nbsp;a&nbsp;subset&nbsp;of&nbsp;the&nbsp;assumptions<br/>
+-&nbsp;make&nbsp;a&nbsp;negate_all&nbsp;thingy<br/>
+PROOF:<br/>
+-&nbsp;if&nbsp;i&nbsp;give&nbsp;it&nbsp;negate_all(core),&nbsp;then&nbsp;the&nbsp;new&nbsp;unsat&nbsp;core&nbsp;cannot&nbsp;equal&nbsp;the&nbsp;old&nbsp;unsat&nbsp;core.<br/>
+-<br/>
+*)</span></div>
+</div>
+
+<div id="footer">
+<hr/><a href="indexpage.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

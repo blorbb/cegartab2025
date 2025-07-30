@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>CegarTableaux.Cnf</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">CegarTableaux.Cnf</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">List</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">List.ListNotations</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">list_scope</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Arith</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">CegarTableaux</span> <span class="id" title="keyword">Require</span> <a class="idref" href="CegarTableaux.CplClause.html#"><span class="id" title="library">CplClause</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A classical formula in CNF. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="t" class="idref" href="#t"><span class="id" title="definition">t</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="force" class="idref" href="#force"><span class="id" title="definition">force</span></a> {<a id="W:1" class="idref" href="#W:1"><span class="id" title="binder">W</span></a>} {<a id="R:2" class="idref" href="#R:2"><span class="id" title="binder">R</span></a>} (<a id="M:3" class="idref" href="#M:3"><span class="id" title="binder">M</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.Cnf.html#W:1"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.Cnf.html#R:2"><span class="id" title="variable">R</span></a>) (<a id="w0:4" class="idref" href="#w0:4"><span class="id" title="binder">w0</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#W:1"><span class="id" title="variable">W</span></a>) (<a id="phi:5" class="idref" href="#phi:5"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="abbreviation">List.Forall</span> (<a class="idref" href="CegarTableaux.CplClause.html#force"><span class="id" title="definition">CplClause.force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:3"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:4"><span class="id" title="variable">w0</span></a>) <a class="idref" href="CegarTableaux.Cnf.html#phi:5"><span class="id" title="variable">phi</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="In" class="idref" href="#In"><span class="id" title="definition">In</span></a> (<a id="x:6" class="idref" href="#x:6"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="phi:7" class="idref" href="#phi:7"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="inductive">List.Exists</span> (<a class="idref" href="CegarTableaux.CplClause.html#In"><span class="id" title="definition">CplClause.In</span></a> <a class="idref" href="CegarTableaux.Cnf.html#x:6"><span class="id" title="variable">x</span></a>) <a class="idref" href="CegarTableaux.Cnf.html#phi:7"><span class="id" title="variable">phi</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.Cnf.html#In"><span class="id" title="definition">In</span></a> <span class="id" title="var">x</span> <span class="id" title="var">phi</span> /.<br/>
+<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">force</span></a> {<span class="id" title="var">W</span> <span class="id" title="var">R</span>} <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span> /.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="from_assumptions" class="idref" href="#from_assumptions"><span class="id" title="definition">from_assumptions</span></a> (<a id="assumptions:8" class="idref" href="#assumptions:8"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Lit.html#t"><span class="id" title="inductive">Lit.t</span></a>) : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a> := <span class="id" title="abbreviation">List.map</span> <a class="idref" href="CegarTableaux.CplClause.html#from_lit"><span class="id" title="definition">CplClause.from_lit</span></a> <a class="idref" href="CegarTableaux.Cnf.html#assumptions:8"><span class="id" title="variable">assumptions</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="satisfiable" class="idref" href="#satisfiable"><span class="id" title="definition">satisfiable</span></a> (<a id="phi:9" class="idref" href="#phi:9"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a id="W:10" class="idref" href="#W:10"><span class="id" title="binder">W</span></a> <a id="R:11" class="idref" href="#R:11"><span class="id" title="binder">R</span></a> (<a id="M:12" class="idref" href="#M:12"><span class="id" title="binder">M</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.Cnf.html#W:10"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.Cnf.html#R:11"><span class="id" title="variable">R</span></a>) (<a id="w0:13" class="idref" href="#w0:13"><span class="id" title="binder">w0</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#W:10"><span class="id" title="variable">W</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">),</span></a> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:12"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:13"><span class="id" title="variable">w0</span></a> <a class="idref" href="CegarTableaux.Cnf.html#phi:9"><span class="id" title="variable">phi</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="unsatisfiable" class="idref" href="#unsatisfiable"><span class="id" title="definition">unsatisfiable</span></a> (<a id="phi:14" class="idref" href="#phi:14"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> := <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"><span class="id" title="notation">~</span></a> <a class="idref" href="CegarTableaux.Cnf.html#satisfiable"><span class="id" title="definition">satisfiable</span></a> <a class="idref" href="CegarTableaux.Cnf.html#phi:14"><span class="id" title="variable">phi</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+NoDup list of atoms of a CNF formula. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="atms_of" class="idref" href="#atms_of"><span class="id" title="definition">atms_of</span></a> (<a id="phi:15" class="idref" href="#phi:15"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="definition">List.nodup</span> (<span class="id" title="lemma">Nat.eq_dec</span>) (<span class="id" title="definition">List.flat_map</span> (<span class="id" title="keyword">fun</span> <a id="cpl:16" class="idref" href="#cpl:16"><span class="id" title="binder">cpl</span></a> =&gt; <span class="id" title="abbreviation">List.map</span> <a class="idref" href="CegarTableaux.Lit.html#atm"><span class="id" title="definition">Lit.atm</span></a> <a class="idref" href="CegarTableaux.Cnf.html#cpl:16"><span class="id" title="variable">cpl</span></a>) <a class="idref" href="CegarTableaux.Cnf.html#phi:15"><span class="id" title="variable">phi</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="in_atms_of" class="idref" href="#in_atms_of"><span class="id" title="lemma">in_atms_of</span></a> : <span class="id" title="keyword">forall</span> (<a id="phi:17" class="idref" href="#phi:17"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) (<a id="x:18" class="idref" href="#x:18"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>), <a class="idref" href="CegarTableaux.Cnf.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.Cnf.html#x:18"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.Cnf.html#phi:17"><span class="id" title="variable">phi</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <span class="id" title="definition">List.In</span> <a class="idref" href="CegarTableaux.Cnf.html#x:18"><span class="id" title="variable">x</span></a> (<a class="idref" href="CegarTableaux.Cnf.html#atms_of"><span class="id" title="definition">atms_of</span></a> <a class="idref" href="CegarTableaux.Cnf.html#phi:17"><span class="id" title="variable">phi</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">phi</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">head</span> <span class="id" title="var">tail</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.Exists_nil</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">List.nodup_In</span>, <span class="id" title="lemma">List.Exists_cons</span>, <span class="id" title="lemma">List.in_app_iff</span>, <span class="id" title="lemma">List.Exists_exists</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">Hxin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hxin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hxhead</span> | [<span class="id" title="var">clause</span> [<span class="id" title="var">Hclause_in_tail</span> <span class="id" title="var">Hx_in_clause</span>]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">left</span>. <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hxhead</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">Hxhead</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">clause</span>. <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hx_in_clause</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> [<span class="id" title="var">Hxhead</span> | <span class="id" title="var">Hxtail</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">left</span>. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">Hxhead</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hxtail</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hxtail</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">clause</span> [<span class="id" title="var">Hclause_in_tail</span> <span class="id" title="var">Hx_in_clause</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">clause</span>. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="indexpage.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

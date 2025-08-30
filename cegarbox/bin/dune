@@ -1,0 +1,9 @@
+(executable
+ (public_name cegarbox)
+ (name main)
+ (libraries cegarbox))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)

@@ -29,5 +29,6 @@ doc: makefile.rocq
 clean::
 	rm makefile.rocq makefile.rocq.conf
 	rm -f $(BUILD_FILES)
+	find cegarbox/lib -maxdepth 1 -type f ! -name 'dune' ! -name 'bindings.ml' ! -name 'bindings.mli' -delete
 
 .PHONY: _

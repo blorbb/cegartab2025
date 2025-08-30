@@ -32,12 +32,34 @@
 <h1 class="libtitle">CegarTableaux.Extract</h1>
 
 <div class="code">
-<span class="comment">(*&nbsp;From&nbsp;Stdlib&nbsp;Require&nbsp;Extraction&nbsp;ExtrOcamlBasic.<br/>
-From&nbsp;CegarTableaux&nbsp;Require&nbsp;Mcnf&nbsp;Tree.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">Extraction</span> <span class="id" title="library">ExtrOcamlBasic</span> <span class="id" title="library">ExtrOcamlNatInt</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">CegarTableaux</span> <span class="id" title="keyword">Require</span> <a class="idref" href="CegarTableaux.Mcnf.html#"><span class="id" title="library">Mcnf</span></a> <a class="idref" href="CegarTableaux.Tree.html#"><span class="id" title="library">Tree</span></a> <a class="idref" href="CegarTableaux.Solver.html#"><span class="id" title="library">Solver</span></a> <a class="idref" href="CegarTableaux.CplSolver.html#"><span class="id" title="library">CplSolver</span></a>.<br/>
+
 <br/>
-Extraction&nbsp;Language&nbsp;OCaml.<br/>
-Extraction&nbsp;"cegar.ml"&nbsp;Mcnf.from_nnf.<br/>
-Extraction&nbsp;"tree.ml"&nbsp;Tree.t.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Extraction</span> <span class="id" title="var">Language</span> <span class="id" title="var">OCaml</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="keyword">Extraction</span> <span class="id" title="var">Output</span> <span class="id" title="var">Directory</span> "cegarbox/lib".<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The axioms depend on a module named <span class="inlinecode"><span class="id" title="var">Bindings</span></span> being accessible with
+    the correct implementation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">CplSolver.t</span> =&gt; "Bindings.t".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">CplSolver.make</span> =&gt; "Bindings.make".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">CplSolver.add_clause</span> =&gt; "Bindings.add_clause".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">CplSolver.solve_with_assumptions</span> =&gt; "Bindings.solve_with_assumptions".<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">Lit.atm</span></span> is needed in the OCaml bindings but is not used by <span class="inlinecode"><a class="idref" href="CegarTableaux.Solver.html#solve_fml"><span class="id" title="definition">solve_fml</span></a></span>. 
+</div>
+<div class="code">
+<span class="id" title="var">Separate</span> <span class="id" title="keyword">Extraction</span> <span class="id" title="var">Solver.solve_fml</span> <span class="id" title="var">Lit.atm</span>.<br/>
 </div>
 </div>
 <div id="footer">

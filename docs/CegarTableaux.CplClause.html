@@ -41,7 +41,7 @@
 </div>
 
 <div class="doc">
-A CPL-clause, a disjunction of literals. 
+A CPL-clause, a <i>disjunction</i> of literals. 
 </div>
 <div class="code">
 <span class="id" title="keyword">Definition</span> <a id="t" class="idref" href="#t"><span class="id" title="definition">t</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Lit.html#t"><span class="id" title="inductive">Lit.t</span></a>.<br/>
@@ -51,12 +51,14 @@ A CPL-clause, a disjunction of literals.
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a id="x:6" class="idref" href="#x:6"><span class="id" title="binder">x</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">,</span></a> <span class="id" title="definition">List.In</span> <a class="idref" href="CegarTableaux.CplClause.html#x:6"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.CplClause.html#phi:5"><span class="id" title="variable">phi</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <a class="idref" href="CegarTableaux.Lit.html#force"><span class="id" title="definition">Lit.force</span></a> <a class="idref" href="CegarTableaux.CplClause.html#M:3"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.CplClause.html#w0:4"><span class="id" title="variable">w0</span></a> <a class="idref" href="CegarTableaux.CplClause.html#x:6"><span class="id" title="variable">x</span></a>.<br/>
 
 <br/>
+<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.CplClause.html#force"><span class="id" title="definition">force</span></a> {<span class="id" title="var">W</span> <span class="id" title="var">R</span>} <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span> /.<br/>
+
+<br/>
 <span class="id" title="keyword">Definition</span> <a id="In" class="idref" href="#In"><span class="id" title="definition">In</span></a> (<a id="x:7" class="idref" href="#x:7"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="phi:8" class="idref" href="#phi:8"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="definition">List.In</span> <a class="idref" href="CegarTableaux.CplClause.html#x:7"><span class="id" title="variable">x</span></a> (<span class="id" title="abbreviation">List.map</span> <a class="idref" href="CegarTableaux.Lit.html#atm"><span class="id" title="definition">Lit.atm</span></a> <a class="idref" href="CegarTableaux.CplClause.html#phi:8"><span class="id" title="variable">phi</span></a>).<br/>
 
 <br/>
 <span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.CplClause.html#In"><span class="id" title="definition">In</span></a> <span class="id" title="var">x</span> <span class="id" title="var">phi</span> /.<br/>
-<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.CplClause.html#force"><span class="id" title="definition">force</span></a> {<span class="id" title="var">W</span> <span class="id" title="var">R</span>} <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span> /.<br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a id="agree" class="idref" href="#agree"><span class="id" title="definition">agree</span></a> {<a id="W:9" class="idref" href="#W:9"><span class="id" title="binder">W</span></a>} {<a id="R:10" class="idref" href="#R:10"><span class="id" title="binder">R</span></a>} (<a id="phi:11" class="idref" href="#phi:11"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">t</span></a>) (<a id="M:12" class="idref" href="#M:12"><span class="id" title="binder">M</span></a> <a id="M':13" class="idref" href="#M':13"><span class="id" title="binder">M'</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.CplClause.html#W:9"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.CplClause.html#R:10"><span class="id" title="variable">R</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
@@ -92,7 +94,16 @@ A CPL-clause, a disjunction of literals.
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+</div>
+
+<div class="doc">
+Creates a CPL clause from a single literal. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Definition</span> <a id="from_lit" class="idref" href="#from_lit"><span class="id" title="definition">from_lit</span></a> (<a id="l:26" class="idref" href="#l:26"><span class="id" title="binder">l</span></a> : <a class="idref" href="CegarTableaux.Lit.html#t"><span class="id" title="inductive">Lit.t</span></a>) : <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">t</span></a> := <span class="id" title="notation">[</span><a class="idref" href="CegarTableaux.CplClause.html#l:26"><span class="id" title="variable">l</span></a><span class="id" title="notation">]</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.CplClause.html#from_lit"><span class="id" title="definition">from_lit</span></a> <span class="id" title="var">l</span> /.<br/>
 </div>
 </div>
 <div id="footer">

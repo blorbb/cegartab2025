@@ -2,6 +2,7 @@ From Stdlib Require List.
 From CegarTableaux Require Kripke Lit.
 
 
+(** An arbitrary modal formula [Fml.t]. *)
 Inductive t : Type :=
   | Var  (x : nat)
   | Neg  (A : t)
@@ -23,5 +24,6 @@ Fixpoint force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
   | Dia  A   => exists nbr, R w0 nbr /\ force M nbr A
   end.
 
-Definition satisfiable (fml : t) : Prop :=
-  exists W R (M : @Kripke.t W R) (w0 : W), force M w0 fml.
+
+Definition satisfiable (phi : t) : Prop :=
+  exists W R (M : @Kripke.t W R) (w0 : W), force M w0 phi.

@@ -1,3 +1,7 @@
+(** Equisatisfiable conversion from NNF to MCNF.
+
+    We use the term 'surrogate' to mean an unused atom value. *)
+
 From Stdlib Require Import PeanoNat Setoids.Setoid Classical Lia.
 From Stdlib Require List.
 
@@ -7,12 +11,11 @@ From CegarTableaux Require Import Utils.
 Import List.ListNotations.
 Open Scope list_scope.
 
+(** Converts [n -> phi] to MCNF, with a given surrogate value.
 
-(** Equisatisfiable conversion from NNF to MCNF *)
+    Returns a pair of the MCNF formula, and the next free surrogate.
 
-
-(* returns the mcnf formula and the next free surrogate *)
-(* given a name for the current formula (literal to 'fire' the current formula) *)
+    Corresponds to [mcnf(n -> phi, k)] in the paper. *)
 Fixpoint from_n_nnf (n : nat) (phi : Nnf.t) (sur : nat) : (Mcnf.t * nat) :=
   match phi with
   (* n -> l  =>  ~n \/ l *)
@@ -44,12 +47,6 @@ Fixpoint from_n_nnf (n : nat) (phi : Nnf.t) (sur : nat) : (Mcnf.t * nat) :=
       A_mcnf ++ B_mcnf,
       sur
     )
-  (* []l = n -> []l *)
-  (* | Nnf.Box (Nnf.Lit l) =>
-    (
-      [Mclause.Box (Lit.Pos n) l],
-      sur
-    ) *)
   (* n -> []A  =>  n -> []nA ; [](nA -> A) *)
   | Nnf.Box A =>
     let (nA, sur) := (sur, S sur) in
@@ -60,12 +57,6 @@ Fixpoint from_n_nnf (n : nat) (phi : Nnf.t) (sur : nat) : (Mcnf.t * nat) :=
       List.map Mclause.Ctx A_mcnf,
       sur
     )
-  (* <>l = n -> <>l *)
-  (* | Nnf.Dia (Nnf.Lit l) =>
-    (
-      [Mclause.Dia (Lit.Pos n) l],
-      sur
-    ) *)
   (* n -> <>A  =>  n -> <>nA ; [](nA -> A) *)
   | Nnf.Dia A =>
     let (nA, sur) := (sur, S sur) in
@@ -79,12 +70,12 @@ Fixpoint from_n_nnf (n : nat) (phi : Nnf.t) (sur : nat) : (Mcnf.t * nat) :=
   end.
 
 
-(* convert phi to (n /\ from_n_nnf n phi p) *)
-(* (satisfiability preserving if n and p have the right bounds, used in proofs below) *)
+(** Converts [phi] with a name and surrogate to [n /\ mcnf(n -> phi, k)]. *)
 Definition from_nnf_with_sur (name : nat) (phi : Nnf.t) (sur : nat) : Mcnf.t :=
   Mclause.Cpl [Lit.Pos name] :: fst (from_n_nnf name phi sur).
 
 
+(** Converts an NNF formula to MCNF. *)
 Definition from_nnf (phi : Nnf.t) : Mcnf.t :=
   let n := S (Nnf.max_atm phi) in
   from_nnf_with_sur n phi (S n).

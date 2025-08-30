@@ -4,16 +4,14 @@ From CegarTableaux Require Import Utils.
 Import List.ListNotations.
 Open Scope list_scope.
 
-(**
-  An alternative equivalent representation of an MCNF formula.
+(** TODO: change MCNF procedures to use this type directly instead of MCNF. *)
 
-  A linked list of clauses, where the local clauses at the head represent
-  clauses that need to be satisfied at the "current" world, and the tail
-  is one modal context away.
-*)
 
-(* TODO: change MCNF procedures to use this type instead of MCNF? *)
+(** An alternative equivalent representation of an MCNF formula.
 
+    A linked list of clauses, where the local clauses at the head represent
+    clauses that need to be satisfied at the "current" world, and the tail
+    is one modal context away. *)
 Definition t : Type := list Lclauses.t.
 
 
@@ -39,16 +37,6 @@ Definition In (x : nat) (phi : t) : Prop := List.Exists (Lclauses.In x) phi.
 Definition agree {W} {R} (phi : t) (M M' : @Kripke.t W R) : Prop :=
   forall (w : W) (x : nat), In x phi -> (Kripke.valuation M w x <-> Kripke.valuation M' w x).
 
-(** Get the clauses at the next modal context.
-
-  Creates an empty set of clauses if we are at the last modal context.
-*)
-Definition next_ctx (phi : t) : (Lclauses.t * t) :=
-  match phi with
-  | [] => (Lclauses.empty, [])
-  | head :: tail => (head, tail)
-  end.
-
 
 Section Conversion.
   Fixpoint from_mclause (phi : Mclause.t) : t :=
@@ -59,11 +47,10 @@ Section Conversion.
     | Mclause.Ctx phi => Lclauses.empty :: from_mclause phi
     end.
 
-  (**
-    Merge two [t]'s together.
+    (** Merge two [Mchain.t]'s together.
 
-    This will retain all elements, and output a list the length of the longer list.
-  *)
+        This will retain all elements, and output a list the length of
+        the longer list. *)
   Local Fixpoint zip_merge (a b : t) : t :=
     match a, b with
     | ha::ta, hb::tb => (Lclauses.merge ha hb) :: zip_merge ta tb
@@ -80,6 +67,7 @@ Section Conversion.
 End Conversion.
 
 
+(** Logical equivalence of the [from_mcnf] conversion. *)
 Section Correctness.
   Lemma mclause_equivalent : forall {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : Mclause.t),
     Mclause.force M w0 phi <-> force M w0 (from_mclause phi).
@@ -201,15 +189,3 @@ Section Correctness.
         * apply IHtail... 
   Qed.
 End Correctness.
-
-
-(** Adding an empty clause to the end does not change forcing. *)
-Lemma empty_end_equiv : forall {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t),
-  force M w0 phi <-> force M w0 (phi ++ [Lclauses.empty]).
-Proof.
-  intros W R M w0 phi. revert w0.
-
-  induction phi as [|head tail IHtail]; intro w0.
-  - cbn. intuition.
-  - cbn. setoid_rewrite IHtail. reflexivity.
-Qed.

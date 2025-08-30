@@ -1,0 +1,10 @@
+(library
+ (name cegarbox)
+ (libraries minisat))
+
+; disable unused open warning
+
+(env
+ (dev
+  (flags
+   (:standard -w -33))))

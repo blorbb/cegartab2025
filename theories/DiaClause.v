@@ -6,17 +6,22 @@ From CegarTableaux Require Import Utils.
 (** An MCNF dia-clause [a -> <>b]. *)
 Definition t : Type := Lit.t * Lit.t.
 
+
 Definition force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
   Lit.force M w0 (fst phi) -> (exists nbr, R w0 nbr /\ Lit.force M nbr (snd phi)).
+
+Arguments force {W R} M w0 phi /.
+
 
 Definition In (x : nat) (phi : t) : Prop :=
   (x = Lit.atm (fst phi)) \/ (x = Lit.atm (snd phi)).
 
 Arguments In x phi /.
-Arguments force {W R} M w0 phi /.
+
 
 Definition agree {W} {R} (phi : t) (M M' : @Kripke.t W R) : Prop :=
   forall (w : W) (x : nat), In x phi -> (Kripke.valuation M w x <-> Kripke.valuation M' w x).
+
 
 Lemma meaningful_valuations :
   forall {W} {R} (M M' : @Kripke.t W R) (phi : t) (w0 : W),

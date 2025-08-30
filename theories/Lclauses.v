@@ -6,16 +6,16 @@ Import List.ListNotations.
 Open Scope list_scope.
 
 (** Set of clauses at the current world. *)
-Record t : Type := {
+Record t : Type := make {
   cpls : list CplClause.t;
   boxes : list BoxClause.t;
   dias : list DiaClause.t;
 }.
 
-Definition make cpls boxes dias := {| cpls:=cpls; boxes:=boxes; dias:=dias |}.
-
 Definition empty := make [] [] [].
 
+
+(** Merge two sets of local clauses into one. *)
 Definition merge A B := make (cpls A ++ cpls B) (boxes A ++ boxes B) (dias A ++ dias B).
 
 
@@ -23,6 +23,9 @@ Definition force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
   List.Forall (CplClause.force M w0) phi.(cpls) /\
   List.Forall (BoxClause.force M w0) phi.(boxes) /\
   List.Forall (DiaClause.force M w0) phi.(dias).
+
+Arguments force {W R} M w0 phi /.
+
 
 Lemma force_merge_and : forall {W} {R} {M : @Kripke.t W R} {w0 : W} (A B : t),
   force M w0 (merge A B) <-> force M w0 A /\ force M w0 B.
@@ -42,7 +45,6 @@ Definition In (x : nat) (phi : t) : Prop :=
   List.Exists (DiaClause.In x) phi.(dias).
 
 Arguments In x phi /.
-Arguments force {W R} M w0 phi /.
 
 
 Definition agree {W} {R} (phi : t) (M M' : @Kripke.t W R) : Prop :=

@@ -32,6 +32,14 @@
 <h1 class="libtitle">CegarTableaux.Mcnf.Mcnf</h1>
 
 <div class="code">
+</div>
+
+<div class="doc">
+MCNF type with basic lemmas and definitions 
+</div>
+<div class="code">
+
+<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">PeanoNat</span> <span class="id" title="library">Setoids.Setoid</span> <span class="id" title="library">Classical</span> <span class="id" title="library">Lia</span>.<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">List</span>.<br/>
 
@@ -47,11 +55,9 @@
 </div>
 
 <div class="doc">
-MCNF type with basic lemmas and definitions 
+An MCNF formula, a list of modal clauses. 
 </div>
 <div class="code">
-
-<br/>
 <span class="id" title="keyword">Definition</span> <a id="t" class="idref" href="#t"><span class="id" title="definition">t</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Mclause.html#t"><span class="id" title="inductive">Mclause.t</span></a>.<br/>
 
 <br/>
@@ -73,8 +79,13 @@ MCNF type with basic lemmas and definitions
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+</div>
+
+<div class="doc">
+Mini lemmas useful for simplifications. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Section</span> <a id="Simplify" class="idref" href="#Simplify"><span class="id" title="section">Simplify</span></a>.<br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;mini&nbsp;lemmas&nbsp;useful&nbsp;for&nbsp;simplifications&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="in_mcnf_or" class="idref" href="#in_mcnf_or"><span class="id" title="lemma">in_mcnf_or</span></a> :<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<a id="L:17" class="idref" href="#L:17"><span class="id" title="binder">L</span></a> <a id="R:18" class="idref" href="#R:18"><span class="id" title="binder">R</span></a> : <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#t"><span class="id" title="definition">t</span></a>) (<a id="x:19" class="idref" href="#x:19"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>),<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#x:19"><span class="id" title="variable">x</span></a> (<a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#L:17"><span class="id" title="variable">L</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#R:18"><span class="id" title="variable">R</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#x:19"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#L:17"><span class="id" title="variable">L</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"><span class="id" title="notation">\/</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#In"><span class="id" title="definition">In</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#x:19"><span class="id" title="variable">x</span></a> <a class="idref" href="CegarTableaux.Mcnf.Mcnf.html#R:18"><span class="id" title="variable">R</span></a> .<br/>

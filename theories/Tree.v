@@ -5,15 +5,17 @@ From CegarTableaux Require Kripke.
 
 Inductive t :=
   | cons
-  (** A list of atoms which are true at the current world. *)
-    (atms : list nat)
-  (** A list of sub-trees reachable from here. *)
-    (children : list t).
+      (* A list of atoms which are true at the current world. *)
+      (atms : list nat)
+      (* A list of sub-trees reachable from here. *)
+      (children : list t).
+
 
 Definition valuation (tree : t) (atm : nat) : Prop :=
   match tree with
   | cons atms _ => List.In atm atms
   end.
+
 
 Definition relation (w0 w1 : t) : Prop :=
   match w0 with

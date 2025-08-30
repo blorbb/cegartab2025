@@ -32,13 +32,30 @@
 <h1 class="libtitle">CegarTableaux.Utils</h1>
 
 <div class="code">
+</div>
+
+<div class="doc">
+A collection of useful tactics / misc. 
+</div>
+<div class="code">
+
+<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">PeanoNat</span> <span class="id" title="library">Arith</span> <span class="id" title="library">Lia</span> <span class="id" title="library">Classical</span> <span class="id" title="library">Permutation</span> <span class="id" title="library">Relations</span> <span class="id" title="library">RelationClasses</span> <span class="id" title="library">SetoidPermutation</span>.<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">SetoidList</span>.<br/>
 <span class="id" title="keyword">Import</span> <span class="id" title="module">List.ListNotations</span>.<br/>
 <span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">list_scope</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;https://stackoverflow.com/a/60817708&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Proves the first implication in a hypothesis.
+
+<div class="paragraph"> </div>
+
+    Implementation from https://stackoverflow.com/a/60817708. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">forward_gen</span> <span class="id" title="var">H</span> <span class="id" title="var">tac</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">H</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| ?<span class="id" title="var">X</span> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="var">H'</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">H'</span>:<span class="id" title="var">X</span>) ; [<span class="id" title="var">tac</span>|<span class="id" title="tactic">specialize</span> (<span class="id" title="var">H</span> <span class="id" title="var">H'</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">H'</span>]<br/>
@@ -49,7 +66,12 @@
 <span class="id" title="keyword">Tactic Notation</span> "forward" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) "by" <span class="id" title="var">tactic</span>(<span class="id" title="var">tac</span>) := <span class="id" title="var">forward_gen</span> <span class="id" title="var">H</span> <span class="id" title="var">tac</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Simplify&nbsp;if&nbsp;statements&nbsp;by&nbsp;asserting&nbsp;that&nbsp;the&nbsp;next&nbsp;condition&nbsp;is&nbsp;true/false.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Simplify if statements by asserting that the next condition is true/false. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">assert_cond</span> <span class="id" title="var">b</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">lazymatch</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| |- <span class="id" title="keyword">context</span> [ <span class="id" title="keyword">if</span> ?<span class="id" title="var">G</span> <span class="id" title="keyword">then</span> ?<span class="id" title="var">Then</span> <span class="id" title="keyword">else</span> ?<span class="id" title="var">Else</span> ] =&gt;<br/>
@@ -83,6 +105,13 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+</div>
+
+<div class="doc">
+Simplify if statements by asserting that the next condition in a
+    hypothesis is true/false. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">assert_cond_in</span> <span class="id" title="var">b</span> <span class="id" title="var">H</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">lazymatch</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">H</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <span class="id" title="keyword">context</span> [ <span class="id" title="keyword">if</span> ?<span class="id" title="var">G</span> <span class="id" title="keyword">then</span> ?<span class="id" title="var">Then</span> <span class="id" title="keyword">else</span> ?<span class="id" title="var">Else</span> ] =&gt;<br/>
@@ -116,7 +145,12 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;apply&nbsp;a&nbsp;tactic&nbsp;that's&nbsp;usually&nbsp;on&nbsp;the&nbsp;goal,&nbsp;in&nbsp;any&nbsp;hypothesis&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Apply a tactic that's usually on the goal, in any hypothesis. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">in_hyp</span> <span class="id" title="var">H</span> <span class="id" title="var">T</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H0</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="var">H</span> "_old" <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="tactic">rename</span> <span class="id" title="var">H</span> <span class="id" title="var">into</span> <span class="id" title="var">H0</span> ;<br/>
@@ -160,15 +194,16 @@
 &nbsp;&nbsp;<span class="id" title="var">in_hyp</span> <span class="id" title="var">H</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">ifauto</span> <span class="id" title="tactic">by</span> <span class="id" title="var">tac</span>).<br/>
 
 <br/>
-<span class="comment">(*&nbsp;<br/>
-simplifies&nbsp;`let&nbsp;(a,&nbsp;b)&nbsp;:=&nbsp;p&nbsp;in&nbsp;...`<br/>
-Replaces&nbsp;instances&nbsp;of&nbsp;`a`&nbsp;with&nbsp;`fst&nbsp;p`,&nbsp;and&nbsp;`b`&nbsp;with&nbsp;`snd&nbsp;p`.<br/>
-*)</span><br/>
-<span class="id" title="keyword">Local Lemma</span> <a id="inline_pair_lemma" class="idref" href="#inline_pair_lemma"><span class="id" title="lemma">inline_pair_lemma</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a> <a id="B:2" class="idref" href="#B:2"><span class="id" title="binder">B</span></a> <a id="C:3" class="idref" href="#C:3"><span class="id" title="binder">C</span></a> : <span class="id" title="keyword">Type</span>} (<a id="p:4" class="idref" href="#p:4"><span class="id" title="binder">p</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="CegarTableaux.Utils.html#B:2"><span class="id" title="variable">B</span></a>) (<a id="f:5" class="idref" href="#f:5"><span class="id" title="binder">f</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#B:2"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#C:3"><span class="id" title="variable">C</span></a>) :<br/>
-&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">let</span> (<a id="a:6" class="idref" href="#a:6"><span class="id" title="binder">a</span></a>,<a id="b:7" class="idref" href="#b:7"><span class="id" title="binder">b</span></a>) := <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a> <span class="id" title="tactic">in</span> <a class="idref" href="CegarTableaux.Utils.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="CegarTableaux.Utils.html#a:6"><span class="id" title="variable">a</span></a> <a class="idref" href="CegarTableaux.Utils.html#b:7"><span class="id" title="variable">b</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.Utils.html#f:5"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#fst"><span class="id" title="definition">fst</span></a> <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#snd"><span class="id" title="definition">snd</span></a> <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a>).<br/>
-<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+Simplifies <span class="inlinecode"><span class="id" title="keyword">let</span></span> <span class="inlinecode">(<span class="id" title="var">a</span>,</span> <span class="inlinecode"><span class="id" title="var">b</span>)</span> <span class="inlinecode">:=</span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode">...</span> by replacing instances of 
+    <span class="inlinecode"><span class="id" title="var">a</span></span> with <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#fst"><span class="id" title="definition">fst</span></a></span> <span class="inlinecode"><span class="id" title="var">x</span></span>, and <span class="inlinecode"><span class="id" title="var">b</span></span> with <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#snd"><span class="id" title="definition">snd</span></a></span> <span class="inlinecode"><span class="id" title="var">x</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Lemma</span> <a id="inline_pair_lemma" class="idref" href="#inline_pair_lemma"><span class="id" title="lemma">inline_pair_lemma</span></a> : <span class="id" title="keyword">forall</span> {<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a> <a id="B:2" class="idref" href="#B:2"><span class="id" title="binder">B</span></a> <a id="C:3" class="idref" href="#C:3"><span class="id" title="binder">C</span></a> : <span class="id" title="keyword">Type</span>} (<a id="p:4" class="idref" href="#p:4"><span class="id" title="binder">p</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">*</span></a> <a class="idref" href="CegarTableaux.Utils.html#B:2"><span class="id" title="variable">B</span></a>) (<a id="f:5" class="idref" href="#f:5"><span class="id" title="binder">f</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#B:2"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#C:3"><span class="id" title="variable">C</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">let</span> (<a id="a:6" class="idref" href="#a:6"><span class="id" title="binder">a</span></a>,<a id="b:7" class="idref" href="#b:7"><span class="id" title="binder">b</span></a>) := <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a> <span class="id" title="tactic">in</span> <a class="idref" href="CegarTableaux.Utils.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="CegarTableaux.Utils.html#a:6"><span class="id" title="variable">a</span></a> <a class="idref" href="CegarTableaux.Utils.html#b:7"><span class="id" title="variable">b</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="CegarTableaux.Utils.html#f:5"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#fst"><span class="id" title="definition">fst</span></a> <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#snd"><span class="id" title="definition">snd</span></a> <a class="idref" href="CegarTableaux.Utils.html#p:4"><span class="id" title="variable">p</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
 <span class="id" title="keyword">Tactic Notation</span> "inline_pair" := <span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.Utils.html#inline_pair_lemma"><span class="id" title="lemma">inline_pair_lemma</span></a>.<br/>
@@ -189,21 +224,41 @@ Replaces&nbsp;instances&nbsp;of&nbsp;`a`&nbsp;with&nbsp;`fst&nbsp;p`,&nbsp;and&n
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">fold</span> <span class="id" title="var">x</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">fold</span> <span class="id" title="var">y</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
 
 <br/>
-<span class="comment">(*<br/>
-fold&nbsp;a&nbsp;definition&nbsp;in&nbsp;all&nbsp;hypotheses.<br/>
-<br/>
-slightly&nbsp;different&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="tactic">fold</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode">*</span>&nbsp;as&nbsp;this&nbsp;fails&nbsp;if&nbsp;<span class="inlinecode"><span class="id" title="var">i</span></span>&nbsp;is&nbsp;one&nbsp;of&nbsp;the<br/>
-things&nbsp;in&nbsp;the&nbsp;context.&nbsp;<br/>
-*)</span><br/>
+</div>
+
+<div class="doc">
+Fold a definition in all hypotheses.
+
+<div class="paragraph"> </div>
+
+    Slightly different from <span class="inlinecode"><span class="id" title="tactic">fold</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode">*</span> as this fails if <span class="inlinecode"><span class="id" title="var">i</span></span> is one of the
+    definitions in context. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">fold_all</span> <span class="id" title="var">ident</span> := <span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| [ <span class="id" title="var">H</span>: <span class="id" title="var">_</span> |- <span class="id" title="var">_</span> ] =&gt; <span class="id" title="tactic">progress</span> <span class="id" title="tactic">fold</span> <span class="id" title="var">ident</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span><br/>
 <span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-<span class="id" title="keyword">Lemma</span> <a id="contrapositive" class="idref" href="#contrapositive"><span class="id" title="lemma">contrapositive</span></a> (<a id="P:8" class="idref" href="#P:8"><span class="id" title="binder">P</span></a> <a id="Q:9" class="idref" href="#Q:9"><span class="id" title="binder">Q</span></a> : <span class="id" title="keyword">Prop</span>) : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">(</span></a><a class="idref" href="CegarTableaux.Utils.html#P:8"><span class="id" title="variable">P</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#Q:9"><span class="id" title="variable">Q</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"><span class="id" title="notation">~</span></a><a class="idref" href="CegarTableaux.Utils.html#Q:9"><span class="id" title="variable">Q</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"><span class="id" title="notation">~</span></a><a class="idref" href="CegarTableaux.Utils.html#P:8"><span class="id" title="variable">P</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">)</span></a>.<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">tauto</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+Replaces a hypothesis with a new hypothesis. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Tactic Notation</span> "replace_hyp" <span class="id" title="var">ident</span>(<span class="id" title="var">H</span>) "with" <span class="id" title="keyword">constr</span>(<span class="id" title="var">P</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">Hnew</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="var">H</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> <span class="id" title="var">P</span> <span class="id" title="keyword">as</span> <span class="id" title="var">Hnew</span>; [|<span class="id" title="tactic">clear</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">rename</span> <span class="id" title="var">Hnew</span> <span class="id" title="var">into</span> <span class="id" title="var">H</span>].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Function pipeline operator 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="apply" class="idref" href="#apply"><span class="id" title="definition">apply</span></a> {<a id="A:8" class="idref" href="#A:8"><span class="id" title="binder">A</span></a> <a id="B:9" class="idref" href="#B:9"><span class="id" title="binder">B</span></a>} (<a id="x:10" class="idref" href="#x:10"><span class="id" title="binder">x</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:8"><span class="id" title="variable">A</span></a>) (<a id="f:11" class="idref" href="#f:11"><span class="id" title="binder">f</span></a> : <a class="idref" href="CegarTableaux.Utils.html#A:8"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="CegarTableaux.Utils.html#B:9"><span class="id" title="variable">B</span></a>) := <a class="idref" href="CegarTableaux.Utils.html#f:11"><span class="id" title="variable">f</span></a> <a class="idref" href="CegarTableaux.Utils.html#x:10"><span class="id" title="variable">x</span></a>.<br/>
+<span class="id" title="keyword">Infix</span> <a id="53407782e708e33cf564f4172e0ae9a0" class="idref" href="#53407782e708e33cf564f4172e0ae9a0"><span class="id" title="notation">&quot;</span></a>|&gt;" := <a class="idref" href="CegarTableaux.Utils.html#apply"><span class="id" title="definition">apply</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>).<br/>
 </div>
 </div>
 <div id="footer">

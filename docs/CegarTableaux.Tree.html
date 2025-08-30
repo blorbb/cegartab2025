@@ -46,20 +46,10 @@ A Kripke model with a tree structure.
 <br/>
 <span class="id" title="keyword">Inductive</span> <a id="t" class="idref" href="#t"><span class="id" title="definition, inductive"><span id="t_rect" class="id"><span id="t_ind" class="id"><span id="t_rec" class="id"><span id="t_sind" class="id">t</span></span></span></span></span></a> :=<br/>
 &nbsp;&nbsp;| <a id="cons" class="idref" href="#cons"><span class="id" title="constructor">cons</span></a><br/>
-&nbsp;&nbsp;</div>
-
-<div class="doc">
-A list of atoms which are true at the current world. 
-</div>
-<div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;(<a id="atms:3" class="idref" href="#atms:3"><span class="id" title="binder">atms</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
-&nbsp;&nbsp;</div>
-
-<div class="doc">
-A list of sub-trees reachable from here. 
-</div>
-<div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;(<a id="children:4" class="idref" href="#children:4"><span class="id" title="binder">children</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Tree.html#t:1"><span class="id" title="inductive">t</span></a>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;A&nbsp;list&nbsp;of&nbsp;atoms&nbsp;which&nbsp;are&nbsp;true&nbsp;at&nbsp;the&nbsp;current&nbsp;world.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="atms:3" class="idref" href="#atms:3"><span class="id" title="binder">atms</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;A&nbsp;list&nbsp;of&nbsp;sub-trees&nbsp;reachable&nbsp;from&nbsp;here.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="children:4" class="idref" href="#children:4"><span class="id" title="binder">children</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Tree.html#t:1"><span class="id" title="inductive">t</span></a>).<br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a id="valuation" class="idref" href="#valuation"><span class="id" title="definition">valuation</span></a> (<a id="tree:5" class="idref" href="#tree:5"><span class="id" title="binder">tree</span></a> : <a class="idref" href="CegarTableaux.Tree.html#t"><span class="id" title="inductive">t</span></a>) (<a id="atm:6" class="idref" href="#atm:6"><span class="id" title="binder">atm</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>

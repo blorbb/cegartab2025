@@ -42,14 +42,23 @@
 </div>
 
 <div class="doc">
-A classical formula in CNF. 
+A classical formula in conjunctive normal form. 
 </div>
 <div class="code">
 <span class="id" title="keyword">Definition</span> <a id="t" class="idref" href="#t"><span class="id" title="definition">t</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.CplClause.html#t"><span class="id" title="definition">CplClause.t</span></a>.<br/>
 
 <br/>
+</div>
+
+<div class="doc">
+Whether a CNF formula is forced at a particular world. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Definition</span> <a id="force" class="idref" href="#force"><span class="id" title="definition">force</span></a> {<a id="W:1" class="idref" href="#W:1"><span class="id" title="binder">W</span></a>} {<a id="R:2" class="idref" href="#R:2"><span class="id" title="binder">R</span></a>} (<a id="M:3" class="idref" href="#M:3"><span class="id" title="binder">M</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.Cnf.html#W:1"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.Cnf.html#R:2"><span class="id" title="variable">R</span></a>) (<a id="w0:4" class="idref" href="#w0:4"><span class="id" title="binder">w0</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#W:1"><span class="id" title="variable">W</span></a>) (<a id="phi:5" class="idref" href="#phi:5"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="abbreviation">List.Forall</span> (<a class="idref" href="CegarTableaux.CplClause.html#force"><span class="id" title="definition">CplClause.force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:3"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:4"><span class="id" title="variable">w0</span></a>) <a class="idref" href="CegarTableaux.Cnf.html#phi:5"><span class="id" title="variable">phi</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">force</span></a> {<span class="id" title="var">W</span> <span class="id" title="var">R</span>} <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span> /.<br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a id="In" class="idref" href="#In"><span class="id" title="definition">In</span></a> (<a id="x:6" class="idref" href="#x:6"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="phi:7" class="idref" href="#phi:7"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
@@ -57,10 +66,21 @@ A classical formula in CNF.
 
 <br/>
 <span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.Cnf.html#In"><span class="id" title="definition">In</span></a> <span class="id" title="var">x</span> <span class="id" title="var">phi</span> /.<br/>
-<span class="id" title="keyword">Arguments</span> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">force</span></a> {<span class="id" title="var">W</span> <span class="id" title="var">R</span>} <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span> /.<br/>
 
 <br/>
-<span class="id" title="keyword">Definition</span> <a id="from_assumptions" class="idref" href="#from_assumptions"><span class="id" title="definition">from_assumptions</span></a> (<a id="assumptions:8" class="idref" href="#assumptions:8"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Lit.html#t"><span class="id" title="inductive">Lit.t</span></a>) : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a> := <span class="id" title="abbreviation">List.map</span> <a class="idref" href="CegarTableaux.CplClause.html#from_lit"><span class="id" title="definition">CplClause.from_lit</span></a> <a class="idref" href="CegarTableaux.Cnf.html#assumptions:8"><span class="id" title="variable">assumptions</span></a>.<br/>
+</div>
+
+<div class="doc">
+Creates a CNF formula from unit assumptions.
+
+<div class="paragraph"> </div>
+
+    Each literal in the assumptions is put in it's own CPL clause to
+    have the same semantics (assumptions is a <i>conjunction</i> of literals). 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="from_assumptions" class="idref" href="#from_assumptions"><span class="id" title="definition">from_assumptions</span></a> (<a id="assumptions:8" class="idref" href="#assumptions:8"><span class="id" title="binder">assumptions</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="CegarTableaux.Lit.html#t"><span class="id" title="inductive">Lit.t</span></a>) : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="abbreviation">List.map</span> <a class="idref" href="CegarTableaux.CplClause.html#from_lit"><span class="id" title="definition">CplClause.from_lit</span></a> <a class="idref" href="CegarTableaux.Cnf.html#assumptions:8"><span class="id" title="variable">assumptions</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a id="satisfiable" class="idref" href="#satisfiable"><span class="id" title="definition">satisfiable</span></a> (<a id="phi:9" class="idref" href="#phi:9"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
@@ -73,7 +93,11 @@ A classical formula in CNF.
 </div>
 
 <div class="doc">
-NoDup list of atoms of a CNF formula. 
+The set of atoms that exist in the formula.
+
+<div class="paragraph"> </div>
+
+    Duplicates are removed. 
 </div>
 <div class="code">
 <span class="id" title="keyword">Definition</span> <a id="atms_of" class="idref" href="#atms_of"><span class="id" title="definition">atms_of</span></a> (<a id="phi:15" class="idref" href="#phi:15"><span class="id" title="binder">phi</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#t"><span class="id" title="definition">t</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
@@ -97,6 +121,13 @@ NoDup list of atoms of a CNF formula.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.in_flat_map</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hxtail</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hxtail</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">clause</span> [<span class="id" title="var">Hclause_in_tail</span> <span class="id" title="var">Hx_in_clause</span>]].<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">clause</span>. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="force_app" class="idref" href="#force_app"><span class="id" title="lemma">force_app</span></a> : <span class="id" title="keyword">forall</span> {<a id="W:19" class="idref" href="#W:19"><span class="id" title="binder">W</span></a>} {<a id="R:20" class="idref" href="#R:20"><span class="id" title="binder">R</span></a>} (<a id="M:21" class="idref" href="#M:21"><span class="id" title="binder">M</span></a> : @<a class="idref" href="CegarTableaux.Kripke.html#t"><span class="id" title="record">Kripke.t</span></a> <a class="idref" href="CegarTableaux.Cnf.html#W:19"><span class="id" title="variable">W</span></a> <a class="idref" href="CegarTableaux.Cnf.html#R:20"><span class="id" title="variable">R</span></a>) (<a id="w0:22" class="idref" href="#w0:22"><span class="id" title="binder">w0</span></a> : <a class="idref" href="CegarTableaux.Cnf.html#W:19"><span class="id" title="variable">W</span></a>) <a id="a:23" class="idref" href="#a:23"><span class="id" title="binder">a</span></a> <a id="b:24" class="idref" href="#b:24"><span class="id" title="binder">b</span></a>,<br/>
+&nbsp;&nbsp;<a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">Cnf.force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:21"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:22"><span class="id" title="variable">w0</span></a> (<a class="idref" href="CegarTableaux.Cnf.html#a:23"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#bc347c51eaf667706ae54503b26d52c6"><span class="id" title="notation">++</span></a> <a class="idref" href="CegarTableaux.Cnf.html#b:24"><span class="id" title="variable">b</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">Cnf.force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:21"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:22"><span class="id" title="variable">w0</span></a> <a class="idref" href="CegarTableaux.Cnf.html#a:23"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">Cnf.force</span></a> <a class="idref" href="CegarTableaux.Cnf.html#M:21"><span class="id" title="variable">M</span></a> <a class="idref" href="CegarTableaux.Cnf.html#w0:22"><span class="id" title="variable">w0</span></a> <a class="idref" href="CegarTableaux.Cnf.html#b:24"><span class="id" title="variable">b</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="CegarTableaux.Cnf.html#force"><span class="id" title="definition">force</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">List.Forall_app</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
 </div>
 </div>

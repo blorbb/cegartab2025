@@ -3,7 +3,7 @@ From Stdlib Require Import Lia.
 From CegarTableaux Require Lit Kripke CplClause BoxClause DiaClause.
 From CegarTableaux Require Import Utils.
 
-(** A modal clause: MCNF clause with an arbitrary number of boxes. *)
+(** An MCNF clause with an arbitrary number of boxes. *)
 Inductive t : Type :=
   | Cpl (cpl : CplClause.t)
   | Box (box : BoxClause.t)

@@ -3,20 +3,25 @@ From CegarTableaux Require Lit.
 Import List.ListNotations.
 Open Scope list_scope.
 
-(** A CPL-clause, a disjunction of literals. *)
+(** A CPL-clause, a _disjunction_ of literals. *)
 Definition t : Type := list Lit.t.
+
 
 Definition force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
   exists x, List.In x phi /\ Lit.force M w0 x.
+
+Arguments force {W R} M w0 phi /.
+
 
 Definition In (x : nat) (phi : t) : Prop :=
   List.In x (List.map Lit.atm phi).
 
 Arguments In x phi /.
-Arguments force {W R} M w0 phi /.
+
 
 Definition agree {W} {R} (phi : t) (M M' : @Kripke.t W R) : Prop :=
   forall (w : W) (x : nat), In x phi -> (Kripke.valuation M w x <-> Kripke.valuation M' w x).
+
 
 Lemma meaningful_valuations :
   forall {W} {R} (M M' : @Kripke.t W R) (phi : t) (w0 : W),
@@ -45,4 +50,8 @@ Proof with simpl; auto.
     simpl. now apply List.in_map.
 Qed.
 
+
+(** Creates a CPL clause from a single literal. *)
 Definition from_lit (l : Lit.t) : t := [l].
+
+Arguments from_lit l /.

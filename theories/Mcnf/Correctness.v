@@ -13,7 +13,6 @@ Open Scope list_scope.
 Module Mcnfc := Conversion.
 
 
-
 Lemma sur_input_le_return :
   forall (name : nat) (phi : Nnf.t) (sur : nat),
     sur <= snd (Mcnfc.from_n_nnf name phi sur).
@@ -55,10 +54,8 @@ Proof.
 Qed.
 
 
-(*
-  an extra tactic [autolia] that is equivalent to [lia] but applies some
-  known inequalities from the above theorems.
-*)
+(** An extra tactic [autolia] that is equivalent to [lia] but applies some
+    known inequalities from the above theorems. *)
 Local Ltac add_ineq_from_sym_in_nnf :=
   match goal with
   | [ H: Nnf.In ?x ?phi |- _ ] =>
@@ -92,23 +89,11 @@ Local Ltac autolia :=
   add_ineqs;
   lia.
 
-(**
-  Solve the current goal with a variety of autosolvers which are likely
-  to solve goals relating to the current context.
+(** Solve the current goal with a variety of autosolvers which are likely
+    to solve goals relating to the current context.
 
-  This fails if the goal cannot be completely solved.
-
-  Should be used like [Proof with try finish.].
-*)
+    This fails if the goal cannot be completely solved. *)
 Local Ltac finish := simpl; solve [auto | autolia | tauto | ifauto].
-
-
-
-
-
-
-
-
 
 
 Theorem conv_atm_range :
@@ -297,23 +282,20 @@ Proof.
 Qed.
 
 
-
-
+(** Construction of a model that forces the converted formula. *)
 Section EquisatModel.
   Definition set_kripke_at_n_iff_force
     {W} {R}
-    (* the model to change at n *)
+    (** the model to change at n *)
     (Mmcnf : @Kripke.t W R) (n : nat)
-    (* at n, set valuation to Nnf.force Mnnf w phi *)
+    (** at n, set valuation to Nnf.force Mnnf w phi *)
     (Mnnf : @Kripke.t W R) (phi : Nnf.t)
     : @Kripke.t W R :=
     Kripke.make W R (fun w x => if x =? n then Nnf.force Mnnf w phi else Kripke.valuation Mmcnf w x).
 
 
-  (**
-  Transforms M so that M forces (n -> phi) iff M' forces (n -> phi_mcnf)
-  Requires that [Nnf.max_atm phi < n < sur]
-  *)
+  (** Transforms [M] so that [M] forces [n -> phi] iff [M'] forces [n -> phi']
+      Requires that [Nnf.max_atm phi < n < sur]. *)
   Fixpoint named_model {W} {R} (M : @Kripke.t W R) (n : nat) (phi : Nnf.t) (sur : nat) : @Kripke.t W R :=
     match phi with
     (* n -> l  =>  ~n \/ l *)
@@ -354,8 +336,9 @@ End EquisatModel.
 
 
 
+(** Lemmas about the atoms that the named model changes. *)
 Section EquisatModelRange.
-  Theorem named_model_changes_sur_only :
+  Lemma named_model_changes_sur_only :
     forall {W} {R} (M : @Kripke.t W R) (w : W) (phi : Nnf.t) (n p x : nat) (Hmnp_lt : Nnf.max_atm phi < n < p),
       let s := snd (Mcnfc.from_n_nnf n phi p) in
       ~ (x = n \/ p <= x < s) ->
@@ -460,7 +443,7 @@ Section EquisatModelRange.
   Qed.
 
 
-  Theorem named_model_vals_name_iff_force :
+  Lemma named_model_vals_name_iff_force :
     forall {W} {R} (M : @Kripke.t W R) (w : W) (phi : Nnf.t) (n p : nat),
       Kripke.valuation (named_model M n phi p) w n <-> Nnf.force M w phi.
   Proof.
@@ -476,7 +459,7 @@ Section EquisatModelRange.
   Qed.
 
 
-  Theorem named_model_overrides_all_sur :
+  Lemma named_model_overrides_all_sur :
     forall {W} {R} (M M' : @Kripke.t W R) (w : W) (phi : Nnf.t) (n p x : nat) (Hmnp_lt : Nnf.max_atm phi < n < p),
       let q := snd (Mcnfc.from_n_nnf n phi p) in
       p <= x < q ->
@@ -659,11 +642,11 @@ Section EquisatModelRange.
 End EquisatModelRange.
 
 
-
+(** Inductive proof of NNF to MCNF satisfiability. *)
 Section NnfToMcnf.
-  Variable W : Type.
-  Variable R : relation W.
-  Variable M : @Kripke.t W R.
+  Context {W : Type}.
+  Context {R : relation W}.
+  Context {M : @Kripke.t W R}.
 
   Definition IH phi :=
     forall w0 n p, Nnf.max_atm phi < n < p ->
@@ -1080,8 +1063,7 @@ Section NnfToMcnf.
 End NnfToMcnf.
 
 
-
-Theorem sat_nnf_to_mcnf :
+Corollary sat_nnf_to_mcnf :
   forall (phi : Nnf.t), Nnf.satisfiable phi -> Mcnf.satisfiable (Mcnfc.from_nnf phi).
 Proof with simpl; try lia; auto.
   intros phi Hphi_sat.
@@ -1095,6 +1077,7 @@ Proof with simpl; try lia; auto.
 Qed.
 
 
+(** Proof of backward implication. *)
 Theorem mcnf_to_nnf_forces :
   forall {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : Nnf.t) (n p : nat) (Hmnp_lt : Nnf.max_atm phi < n < p),
   Mcnf.force M w0 (Mcnfc.from_nnf_with_sur n phi p) -> Nnf.force M w0 phi.
@@ -1202,7 +1185,7 @@ Proof with try finish.
 
     apply (IHphi nbr p (S p))... split...
     exists (Lit.Pos p)...
-  
+
   - simpl in Hmnp_lt.
     destruct_pair (Mcnfc.from_n_nnf p phi (S p)) as [A_mcnf q] in Hforce_mcnf.
     simpl in Hforce_mcnf.
@@ -1225,8 +1208,7 @@ Proof with try finish.
 Qed.
 
 
-
-Lemma sat_mcnf_to_nnf :
+Corollary sat_mcnf_to_nnf :
   forall (phi : Nnf.t), Mcnf.satisfiable (Mcnfc.from_nnf phi) -> Nnf.satisfiable phi.
 Proof with simpl; try autolia; auto.
   intros phi Hmcnf_sat.
@@ -1243,6 +1225,7 @@ Proof with simpl; try autolia; auto.
 Qed.
 
 
+(** Equisatisfiability of NNF and MCNF. *)
 Theorem nnf_mcnf_equisat :
   forall (phi : Nnf.t), Nnf.satisfiable phi <-> Mcnf.satisfiable (Mcnfc.from_nnf phi).
 Proof.

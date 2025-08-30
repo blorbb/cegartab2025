@@ -5,35 +5,31 @@ From CegarTableaux Require Lit Kripke Fml.
 From CegarTableaux Require Import Utils.
 
 
+(** A modal formula in negation normal form. *)
 Inductive t : Type :=
-  | Lit (p : Lit.t)
-  | And (phi psi : t)
-  | Or  (phi psi : t)
-  | Box (phi : t)
-  | Dia (phi : t).
-
-(* TODO: create nnf_simplify function *)
+  | Lit (l : Lit.t)
+  | And (A B : t)
+  | Or  (A B : t)
+  | Box (A : t)
+  | Dia (A : t).
 
 
-Section Satisfiability.
-  Fixpoint force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
-    match phi with
-    | Lit l   => Lit.force M w0 l
-    | And A B => force M w0 A /\ force M w0 B
-    | Or  A B => force M w0 A \/ force M w0 B
-    | Box A   => forall nbr, R w0 nbr -> force M nbr A
-    | Dia A   => exists nbr, R w0 nbr /\ force M nbr A
-    end.
+Fixpoint force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
+  match phi with
+  | Lit l   => Lit.force M w0 l
+  | And A B => force M w0 A /\ force M w0 B
+  | Or  A B => force M w0 A \/ force M w0 B
+  | Box A   => forall nbr, R w0 nbr -> force M nbr A
+  | Dia A   => exists nbr, R w0 nbr /\ force M nbr A
+  end.
 
 
-  Definition satisfiable (phi : t) : Prop :=
-    exists W R (M : @Kripke.t W R) (w0 : W), force M w0 phi.
+Definition satisfiable (phi : t) : Prop :=
+  exists W R (M : @Kripke.t W R) (w0 : W), force M w0 phi.
 
 
-  Definition unsatisfiable (phi : t) : Prop :=
-    forall W R (M : @Kripke.t W R) (w0 : W), ~ force M w0 phi.
-End Satisfiability.
-
+Definition unsatisfiable (phi : t) : Prop :=
+  forall W R (M : @Kripke.t W R) (w0 : W), ~ force M w0 phi.
 
 
 Section Conversion.
@@ -60,8 +56,7 @@ Section Conversion.
 End Conversion.
 
 
-
-(* correctness of the from_fml conversion *)
+(** Logical equivalence of the [from_fml] conversion. *)
 Section Correctness.
   Theorem force_negate_iff_not_force {W} {R} (M : @Kripke.t W R) :
     forall w0 phi, force M w0 (negate phi) <-> ~ force M w0 phi.
@@ -149,8 +144,7 @@ Section Correctness.
 End Correctness.
 
 
-
-(* Definitions And theorems relating to the structure of an NNF formula. *)
+(** Definitions and theorems relating to the structure of an NNF formula. *)
 Section Range.
   Fixpoint max_atm (phi : t) : nat :=
     match phi with
@@ -205,12 +199,13 @@ Section Range.
 
 
   Definition agree {W} {R} (phi : t) (M M' : @Kripke.t W R) : Prop :=
-    forall (w : W) (x : nat), In x phi -> (Kripke.valuation M w x <-> Kripke.valuation M' w x).
+    forall (w : W) (p : nat), In p phi -> (Kripke.valuation M w p <-> Kripke.valuation M' w p).
 
+  (** Makes some proofs in mcnf a bit easier.
 
-  (* some proofs in mcnf a bit easier -- agree on phi -> agree on subformulas of phi *)
-  Corollary agree_l {W} {R} {M M' : @Kripke.t W R} (left right : t) :
-    agree (And left right) M M' -> agree left M M'.
+      Agree on phi implies agree on subformulae of phi *)
+  Corollary agree_l {W} {R} {M M' : @Kripke.t W R} (l r : t) :
+    agree (And l r) M M' -> agree l M M'.
   Proof.
     intro Hagree.
     unfold agree in *.
@@ -218,9 +213,8 @@ Section Range.
     apply Hagree. simpl. now left.
   Qed.
 
-
-  Corollary agree_r {W} {R} {M M' : @Kripke.t W R} (left right : t) :
-    agree (And left right) M M' -> agree right M M'.
+  Corollary agree_r {W} {R} {M M' : @Kripke.t W R} (l r : t) :
+    agree (And l r) M M' -> agree r M M'.
   Proof.
     intro Hagree.
     unfold agree in *.

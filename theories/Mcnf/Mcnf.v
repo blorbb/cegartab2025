@@ -1,3 +1,5 @@
+(** MCNF type with basic lemmas and definitions *)
+
 From Stdlib Require Import PeanoNat Setoids.Setoid Classical Lia.
 From Stdlib Require List.
 
@@ -8,8 +10,7 @@ Import List.ListNotations.
 Open Scope list_scope.
 
 
-(** MCNF type with basic lemmas and definitions *)
-
+(** An MCNF formula, a list of modal clauses. *)
 Definition t := list Mclause.t.
 
 
@@ -30,8 +31,9 @@ Fixpoint In (x : nat) (phi : t) : Prop :=
   | head :: tail => Mclause.In x head \/ In x tail
   end.
 
+
+(** Mini lemmas useful for simplifications. *)
 Section Simplify.
-  (* mini lemmas useful for simplifications *)
   Lemma in_mcnf_or :
     forall (L R : t) (x : nat),
     In x (L ++ R) <-> In x L \/ In x R .

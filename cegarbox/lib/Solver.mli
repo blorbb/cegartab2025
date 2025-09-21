@@ -32,14 +32,8 @@ val first_cpls : Mchain.t -> CplClause.t list
 
 module VA :
  sig
-  type t = { val_attempt : Valuation.t; conflict_set : Lit.t list }
+  type t = { failed_val : Valuation.t; conflict_set : Lit.t list }
  end
-
-val cegar_box_jumps_func :
-  (Assumptions.t, (Lclauses.t, (Mchain.t, (CplSolver.t, (t, (DiaClause.t
-  list, (VA.t list, (__, Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t
-  list -> __ -> __ -> Solution.t) sigT) sigT) sigT) sigT) sigT) sigT) sigT)
-  sigT -> Solution.t
 
 val cegar_box_jumps :
   Assumptions.t -> Lclauses.t -> Mchain.t -> CplSolver.t -> t -> DiaClause.t

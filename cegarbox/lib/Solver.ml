@@ -49,75 +49,41 @@ let first_cpls = function
 
 module VA =
  struct
-  type t = { val_attempt : Valuation.t; conflict_set : Lit.t list }
+  type t = { failed_val : Valuation.t; conflict_set : Lit.t list }
  end
-
-(** val cegar_box_jumps_func :
-    (Assumptions.t, (Lclauses.t, (Mchain.t, (CplSolver.t, (t, (DiaClause.t
-    list, (VA.t list, (__, Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t
-    list -> __ -> __ -> Solution.t) sigT) sigT) sigT) sigT) sigT) sigT) sigT)
-    sigT -> Solution.t **)
-
-let cegar_box_jumps_func =
-  coq_Fix_sub (fun recarg cegar_box_jumps' ->
-    let assumptions = projT1 recarg in
-    let w0 = projT1 (projT2 recarg) in
-    let tail = projT1 (projT2 (projT2 recarg)) in
-    let solver = projT1 (projT2 (projT2 (projT2 recarg))) in
-    let valuation = projT1 (projT2 (projT2 (projT2 (projT2 recarg)))) in
-    let dias0 = projT1 (projT2 (projT2 (projT2 (projT2 (projT2 recarg))))) in
-    let val_hist =
-      projT1 (projT2 (projT2 (projT2 (projT2 (projT2 (projT2 recarg))))))
-    in
-    let cegar_box0 =
-      projT2
-        (projT2 (projT2 (projT2 (projT2 (projT2 (projT2 (projT2 recarg)))))))
-    in
-    let cegar_box_jumps0 =
-      fun assumptions0 w1 tail0 solver0 valuation0 dias1 val_hist0 cegar_box1 ->
-      cegar_box_jumps' (Coq_existT (assumptions0, (Coq_existT (w1,
-        (Coq_existT (tail0, (Coq_existT (solver0, (Coq_existT (valuation0,
-        (Coq_existT (dias1, (Coq_existT (val_hist0, (Coq_existT (__,
-        cegar_box1))))))))))))))))
-    in
-    (match dias0 with
-     | [] -> Solution.Sat
-     | t0 :: dias' ->
-       let (c, d) = t0 in
-       let clause_is_fired = forces_lit valuation c in
-       if clause_is_fired
-       then let fired_box_clauses =
-              apply w0.boxes
-                (filter (fun box -> forces_lit valuation (fst box)))
-            in
-            let fired_box_lits = map snd fired_box_clauses in
-            let next_cpls = first_cpls tail in
-            let jump =
-              cegar_box0 (d :: fired_box_lits) tail
-                (make_with_clauses next_cpls) [] __ __
-            in
-            (match jump with
-             | Solution.Sat ->
-               cegar_box_jumps0 assumptions w0 tail solver valuation dias'
-                 val_hist cegar_box0
-             | Solution.Unsat core ->
-               let conflict_set0 = conflict_set_of w0 valuation c core in
-               let solver0 = add_conflict_set solver conflict_set0 in
-               cegar_box0 assumptions (w0 :: tail) solver0
-                 ({ VA.val_attempt = valuation; VA.conflict_set =
-                 conflict_set0 } :: val_hist) __ __)
-       else cegar_box_jumps0 assumptions w0 tail solver valuation dias'
-              val_hist cegar_box0))
 
 (** val cegar_box_jumps :
     Assumptions.t -> Lclauses.t -> Mchain.t -> CplSolver.t -> t ->
     DiaClause.t list -> VA.t list -> (Assumptions.t -> Mchain.t ->
     CplSolver.t -> VA.t list -> __ -> __ -> Solution.t) -> Solution.t **)
 
-let cegar_box_jumps assumptions w0 tail solver valuation dias0 val_hist cegar_box0 =
-  cegar_box_jumps_func (Coq_existT (assumptions, (Coq_existT (w0, (Coq_existT
-    (tail, (Coq_existT (solver, (Coq_existT (valuation, (Coq_existT (dias0,
-    (Coq_existT (val_hist, (Coq_existT (__, cegar_box0))))))))))))))))
+let rec cegar_box_jumps assumptions w0 tail solver valuation dias0 hist cegar_box0 =
+  match dias0 with
+  | [] -> Solution.Sat
+  | t0 :: dias' ->
+    let (c, d) = t0 in
+    let clause_is_fired = forces_lit valuation c in
+    if clause_is_fired
+    then let fired_box_clauses =
+           apply w0.boxes (filter (fun box -> forces_lit valuation (fst box)))
+         in
+         let fired_box_lits = map snd fired_box_clauses in
+         let next_cpls = first_cpls tail in
+         let jump =
+           cegar_box0 (d :: fired_box_lits) tail
+             (make_with_clauses next_cpls) [] __ __
+         in
+         (match jump with
+          | Solution.Sat ->
+            cegar_box_jumps assumptions w0 tail solver valuation dias' hist
+              cegar_box0
+          | Solution.Unsat core ->
+            let conflict_set0 = conflict_set_of w0 valuation c core in
+            let solver0 = add_conflict_set solver conflict_set0 in
+            cegar_box0 assumptions (w0 :: tail) solver0 ({ VA.failed_val =
+              valuation; VA.conflict_set = conflict_set0 } :: hist) __ __)
+    else cegar_box_jumps assumptions w0 tail solver valuation dias' hist
+           cegar_box0
 
 (** val cegar_box_func :
     (Assumptions.t, (Mchain.t, (CplSolver.t, VA.t list) sigT) sigT) sigT ->
@@ -128,10 +94,10 @@ let cegar_box_func =
     let assumptions = projT1 recarg in
     let phi = projT1 (projT2 recarg) in
     let solver = projT1 (projT2 (projT2 recarg)) in
-    let val_hist = projT2 (projT2 (projT2 recarg)) in
-    let cegar_box0 = fun assumptions0 phi0 solver0 val_hist0 ->
+    let hist = projT2 (projT2 (projT2 recarg)) in
+    let cegar_box0 = fun assumptions0 phi0 solver0 hist0 ->
       cegar_box' (Coq_existT (assumptions0, (Coq_existT (phi0, (Coq_existT
-        (solver0, val_hist0))))))
+        (solver0, hist0))))))
     in
     let filtered_var = solve_with_assumptions solver assumptions in
     (match filtered_var with
@@ -139,16 +105,16 @@ let cegar_box_func =
        (match phi with
         | [] -> Solution.Sat
         | w0 :: tail ->
-          cegar_box_jumps assumptions w0 tail solver valuation w0.dias
-            val_hist (fun x x0 x1 x2 _ _ -> cegar_box0 x x0 x1 x2))
+          cegar_box_jumps assumptions w0 tail solver valuation w0.dias hist
+            (fun x x0 x1 x2 _ _ -> cegar_box0 x x0 x1 x2))
      | Unsat core -> Solution.Unsat core))
 
 (** val cegar_box :
     Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t list -> Solution.t **)
 
-let cegar_box assumptions phi solver val_hist =
+let cegar_box assumptions phi solver hist =
   cegar_box_func (Coq_existT (assumptions, (Coq_existT (phi, (Coq_existT
-    (solver, val_hist))))))
+    (solver, hist))))))
 
 (** val solve_mchain : Mchain.t -> Solution.t **)
 

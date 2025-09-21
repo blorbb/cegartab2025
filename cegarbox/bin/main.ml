@@ -19,9 +19,7 @@ let check_file filename =
       print_string s;
       exit 1
   in
-  check fml;
-  print_string "unsat ";
-  check (Fml.And (fml, Fml.Neg fml))
+  check fml
 ;;
 
 let rec check_files = function

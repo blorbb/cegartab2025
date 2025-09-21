@@ -141,26 +141,26 @@ Definition first_cpls (chain : Mchain.t) := match chain with
 (** A valuation attempt. *)
 Module VA.
   Record t := make {
-    (* The valuation that was attempted. *)
-    val_attempt : Valuation.t;
+    (* The valuation that was attempted but failed. *)
+    failed_val : Valuation.t;
     (* The conflict set generated from the attempted valuation. *)
     conflict_set : list Lit.t;
     Hcs_ne : conflict_set <> [];
-    Hcs_incl : List.incl conflict_set val_attempt;
+    Hcs_incl : List.incl conflict_set failed_val;
   }.
 
   (** Make a CPL solver from the valuation history.
 
       Making this custom instead of using [List.fold_right] as it makes
       the [cbn]s more useful *)
-  Fixpoint make_solver (phi : Cnf.t) (hist : list t) : CplSolver.t :=
+  Fixpoint make_solver (cnf : Cnf.t) (hist : list t) : CplSolver.t :=
     match hist with
-    | [] => CplSolver.make_with_clauses phi
-    | h :: t => CplSolver.add_conflict_set (make_solver phi t) (VA.conflict_set h)
+    | [] => CplSolver.make_with_clauses cnf
+    | h :: t => CplSolver.add_conflict_set (make_solver cnf t) (VA.conflict_set h)
     end.
 
-  Lemma make_solver_axioms : forall phi hist,
-    CplSolver.solver_axioms (make_solver phi hist).
+  Lemma make_solver_axioms : forall cnf hist,
+    CplSolver.solver_axioms (make_solver cnf hist).
   Proof.
     intros phi hist. induction hist as [|h t IH].
     - cbn. apply CplSolver.axioms_clauses.
@@ -169,83 +169,71 @@ Module VA.
 
   (** A proposition requiring that every valuation attempt was created 
       by the valuation history of all other attempts. *)
-  Fixpoint attempts_from_solutions (assumptions : Assumptions.t) (phi : Cnf.t) (hist : list t) : Prop :=
+  Fixpoint attempts_from_solutions (hist : list t) (cnf : Cnf.t) (assumptions : Assumptions.t) : Prop :=
     match hist with
     | [] => True
     | h :: t =>
-      CplSolver.Solution.Sat (val_attempt h) = CplSolver.solve_with_assumptions (make_solver phi t) assumptions /\
-      attempts_from_solutions assumptions phi t
+      CplSolver.Solution.Sat (failed_val h) = CplSolver.solve_with_assumptions (make_solver cnf t) assumptions /\
+      attempts_from_solutions t cnf assumptions
     end.
 End VA.
 
 
 (** Conditions for [cegar_box_jumps]. *)
 Module JumpConds.
-  Record t assumptions w0  solver val  (val_hist : list VA.t) := {
+  Record t assumptions w0 solver val hist := {
+    attempts_from_solutions :
+      VA.attempts_from_solutions hist (Lclauses.cpls w0) assumptions;
+
     solver_from_val_hist :
-      solver = VA.make_solver (Lclauses.cpls w0) val_hist;
+      solver = VA.make_solver (Lclauses.cpls w0) hist;
 
     solver_sat_val :
       CplSolver.Solution.Sat val = CplSolver.solve_with_assumptions solver assumptions;
-
-    attempts_from_solutions :
-      VA.attempts_from_solutions assumptions (Lclauses.cpls w0) val_hist;
-
-    val_hist_nodup :
-      SetoidList.NoDupA Valuation.eq (List.map VA.val_attempt val_hist);
-
-    val_hist_incl_solver :
-      SetoidList.inclA Valuation.eq
-        (ListDef.map VA.val_attempt val_hist)
-        (CplSolver.every_valuation solver assumptions);
-
-    val_not_in_hist :
-      ~ SetoidList.InA Valuation.eq val (List.map VA.val_attempt val_hist);
   }.
 End JumpConds.
 
 
 (** Conditions for [cegar_box]. *)
 Module LocalConds.
-  Record t assumptions phi solver val_hist := {
-    solver_from_val_hist :
-      solver = VA.make_solver (first_cpls phi) val_hist;
-
+  Record t assumptions phi solver hist := {
     attempts_from_solutions :
-      VA.attempts_from_solutions assumptions (first_cpls phi) val_hist;
+      VA.attempts_from_solutions hist (first_cpls phi) assumptions;
 
-    val_hist_nodup :
-      SetoidList.NoDupA Valuation.eq (List.map VA.val_attempt val_hist);
-
-    val_hist_incl_solver :
-      SetoidList.inclA Valuation.eq
-        (ListDef.map VA.val_attempt val_hist)
-        (CplSolver.every_valuation solver assumptions);
+    solver_from_val_hist :
+      solver = VA.make_solver (first_cpls phi) hist;
   }.
 End LocalConds.
 
 
-(** The valuation history is a subset of every possible valuation. *)
-Lemma val_hist_incl_solver' : forall solver assumptions val_hist val conflict_set,
-  CplSolver.solver_axioms solver ->
-  CplSolver.Solution.Sat val = CplSolver.solve_with_assumptions solver assumptions ->
-  List.incl conflict_set val ->
+Lemma val_hist_incl_solver : forall hist cnf assumptions,
+  VA.attempts_from_solutions hist cnf assumptions ->
   SetoidList.inclA Valuation.eq
-    (List.map VA.val_attempt val_hist)
-    (CplSolver.every_valuation solver assumptions) ->
-  let solver' := CplSolver.add_conflict_set solver conflict_set in
-  SetoidList.inclA Valuation.eq
-    (List.map VA.val_attempt val_hist)
-    (CplSolver.every_valuation solver' assumptions).
-Proof with auto.
-  intros solver assumptions val_hist val conflict_set Hsolver Hval Hcs_incl Hincla solver'.
+    (List.map VA.failed_val hist)
+    (CplSolver.every_valuation (VA.make_solver cnf hist) assumptions).
+Proof with try easy; auto using Valuation.eq_equivalence, VA.make_solver_axioms.
+  intros hist.
+  induction hist as [|h t IH]; intros cnf assumptions Hafs...
 
-  apply PermutationA_inclA with (l:=CplSolver.every_valuation solver assumptions).
-  - exact Valuation.eq_equivalence.
-  - apply Valuation.every_valuation_perm.
-    unfold solver'. apply CplSolver.add_no_new_atms...
-    apply val_subset_no_new_atms with (val:=val)...
-  - assumption.
+  cbn in Hafs.
+  destruct Hafs as [Hh_val Ht_afs].
+
+  intros val Hval_in.
+
+  cbn in *.
+  apply SetoidList.InA_cons in Hval_in as [Hval_h | Hval_t].
+  - apply SetoidList.InA_eqA with (x := VA.failed_val h)...
+    apply failed_val_in_solver'_vals...
+    destruct h...
+  - unfold SetoidList.inclA in IH.
+    specialize (IH cnf assumptions Ht_afs val Hval_t).
+    pose proof CplSolver.same_atms_valuation_set.
+    apply PermutationA_inA with (l:=CplSolver.every_valuation (VA.make_solver cnf t) assumptions)...
+    apply CplSolver.same_atms_valuation_set...
+    + unfold CplSolver.add_conflict_set. apply CplSolver.axioms_ind...
+    + apply CplSolver.add_no_new_atms...
+      apply val_subset_no_new_atms with (val := VA.failed_val h)...
+      destruct h...
 Qed.
 
 
@@ -253,18 +241,16 @@ Qed.
 
     [extra_constraints] is required to strengthen the IH, creating a [solver']
     that is over-abstracted. *)
-Lemma new_val_not_in_hist : forall assumptions val_hist w0 val extra_constraints,
-  let solver := VA.make_solver (Lclauses.cpls w0) val_hist in
+Lemma new_val_not_in_hist_ind : forall hist cnf assumptions val extra_constraints,
+  let solver := VA.make_solver cnf hist in
   let solver' := List.fold_left CplSolver.add_clause extra_constraints solver in
-  VA.attempts_from_solutions assumptions (Lclauses.cpls w0) val_hist ->
-  SetoidList.NoDupA Valuation.eq (ListDef.map VA.val_attempt val_hist) ->
-  SetoidList.inclA Valuation.eq (ListDef.map VA.val_attempt val_hist) (CplSolver.every_valuation solver assumptions) ->
+  VA.attempts_from_solutions hist cnf assumptions ->
   CplSolver.Solution.Sat val = CplSolver.solve_with_assumptions solver' assumptions ->
-  ~ SetoidList.InA Valuation.eq val (List.map VA.val_attempt val_hist).
+  ~ SetoidList.InA Valuation.eq val (List.map VA.failed_val hist).
 Proof with try easy; auto using Valuation.eq_equivalence.
-  intros assumptions val_hist. revert assumptions.
-  induction val_hist as [|hd tl IH];
-    intros assumptions w0 val extra_constraints solver solver' Hatts_from_sols Hnodup Hincl Hval.
+  intros hist.
+  induction hist as [|hd tl IH];
+    intros cnf assumptions val extra_constraints solver solver' Hatts_from_sols Hval.
   { cbn. now rewrite SetoidList.InA_nil. }
   (* split the solver into solver of tl then solver := solvertl + clause *)
   cbn in solver.
@@ -276,14 +262,12 @@ Proof with try easy; auto using Valuation.eq_equivalence.
   intro Hval_in. rewrite List.map_cons in Hval_in.
   apply SetoidList.InA_cons in Hval_in as [Hhd | Htl].
   (* head cannot equal new valuation *)
-  - apply (CplSolver.refined_solver_diff_val solvertl assumptions (VA.val_attempt hd) (VA.conflict_set hd) solver' val).
+  - apply (CplSolver.refined_solver_diff_val solvertl assumptions (VA.failed_val hd) (VA.conflict_set hd) solver' val).
     + exact Hsolvertl.
     + exact Hsolver'.
-    + destruct hd; cbn in *.
-      apply (proj1 Hatts_from_sols).
-    + destruct hd; cbn in *. assumption.
-    + destruct hd; cbn in *.
-      intro Hva_empty. subst conflict_set. contradiction.
+    + destruct hd; cbn in *. apply (proj1 Hatts_from_sols).
+    + destruct hd; cbn in *. exact Hcs_incl.
+    + destruct hd; cbn in *. exact Hcs_ne.
     + subst solver' solver.
       unfold CplSolver.add_conflict_set.
       induction extra_constraints.
@@ -292,29 +276,46 @@ Proof with try easy; auto using Valuation.eq_equivalence.
         2: { apply CplSolver.axioms_ind... }
         apply List.in_app_iff. right.
         rewrite CplSolver.add_clause_cons. cbn. now left.
-    + fold solver solver'. assumption.
-    + symmetry. assumption.
+    + exact Hval.
+    + symmetry. exact Hhd.
 
-  - rewrite List.map_cons in *.
-    (* with extra constraint of the new clause. *)
-    specialize (IH assumptions w0 val ((List.map Lit.negate (VA.conflict_set hd)) :: extra_constraints)).
-
+  - (* with extra constraint of the new clause. *)
+    specialize (IH cnf assumptions val ((List.map Lit.negate (VA.conflict_set hd)) :: extra_constraints)).
     apply IH.
     + cbn in Hatts_from_sols. apply (proj2 Hatts_from_sols).
-    + apply cons_NoDupA in Hnodup. assumption.
-    + apply inclA_cons in Hincl... apply proj2 in Hincl.
-      fold solvertl.
-      apply PermutationA_inclA with (l := CplSolver.every_valuation solver assumptions)...
-      apply Valuation.every_valuation_perm.
-      subst solver'. symmetry. apply CplSolver.add_no_new_atms...
-      apply val_subset_no_new_atms with (val:=(VA.val_attempt hd))...
-      * cbn in Hatts_from_sols.
-        apply (proj1 Hatts_from_sols).
-      * destruct hd; cbn in *. assumption.
     + clear -Hval. rewrite Hval.
       fold solvertl. subst solver' solver.
       cbn. unfold CplSolver.add_conflict_set. reflexivity.
     + assumption.
+Qed.
+
+
+Corollary new_val_not_in_hist : forall hist cnf assumptions val,
+  let solver := VA.make_solver cnf hist in
+  CplSolver.Solution.Sat val = CplSolver.solve_with_assumptions solver assumptions ->
+  VA.attempts_from_solutions hist cnf assumptions ->
+  ~ SetoidList.InA Valuation.eq val (List.map VA.failed_val hist).
+Proof.
+  intros hist cnf assumptions val solver Hval Hafs.
+  set (extra_constraints := @nil CplClause.t).
+  apply new_val_not_in_hist_ind with cnf assumptions extra_constraints.
+  - exact Hafs.
+  - cbn. fold solver. exact Hval.
+Qed.
+
+
+Lemma val_hist_nodup : forall hist cnf assumptions,
+  VA.attempts_from_solutions hist cnf assumptions ->
+  SetoidList.NoDupA Valuation.eq (List.map VA.failed_val hist).
+Proof with try easy; auto using Valuation.eq_equivalence.
+  intros hist.
+  induction hist as [|h t IH]; intros cnf assumptions Hafs...
+
+  cbn in *. destruct Hafs as [Hh_val Ht_afs].
+
+  apply SetoidList.NoDupA_cons.
+  - apply new_val_not_in_hist with cnf assumptions...
+  - apply IH with cnf assumptions...
 Qed.
 
 
@@ -332,6 +333,10 @@ Proof.
 Qed.
 
 
+Lemma sub_S_lt : forall (n m r : nat), n = m -> r < m -> n - S r < m - r.
+Proof. intros. lia. Qed.
+
+
 (** Default auto-solver simplifies a bit too much. *)
 Local Obligation Tactic := intros; try solve [ cbn; auto ].
 
@@ -345,19 +350,16 @@ Program Fixpoint cegar_box_jumps
   (solver : CplSolver.t)
   (valuation : Valuation.t)
   (dias : list DiaClause.t)
-  (val_hist : list VA.t)
-  (conds : JumpConds.t assumptions w0 solver valuation val_hist)
+  (hist : list VA.t)
+  (conds : JumpConds.t assumptions w0 solver valuation hist)
   (cegar_box :
     forall inp_assumps inp_phi inp_solver inp_val_hist (inp_ctconds : LocalConds.t inp_assumps inp_phi inp_solver inp_val_hist),
     lexnat2_lt
-      (length inp_phi,    length (CplSolver.every_valuation inp_solver inp_assumps) - length inp_val_hist)
-      (length (w0::tail), length (CplSolver.every_valuation solver assumptions)     - length val_hist)
+      (List.length inp_phi,    List.length (CplSolver.every_valuation inp_solver inp_assumps) - List.length inp_val_hist)
+      (List.length (w0::tail), List.length (CplSolver.every_valuation solver assumptions)     - List.length hist)
     -> Solution.t
   )
-  {measure (
-    List.length tail,
-    List.length dias
-  ) lexnat2_lt}
+  {struct dias}
   : Solution.t
   :=
   match dias with
@@ -370,7 +372,7 @@ Program Fixpoint cegar_box_jumps
     (* unfired dia clause: just go to next dia clause *)
     (* recursion: NEXT UNFIRED *)
     | false =>
-      cegar_box_jumps assumptions w0 tail solver valuation dias' val_hist _ cegar_box
+      cegar_box_jumps assumptions w0 tail solver valuation dias' hist _ cegar_box
 
     | true =>
       (* this clause has been fired. *)
@@ -397,7 +399,7 @@ Program Fixpoint cegar_box_jumps
         (* JUMP success: continue with next dia *)
         (* recursion: NEXT FIRED *)
         | Solution.Sat =>
-          cegar_box_jumps assumptions w0 tail solver valuation dias' val_hist _ cegar_box
+          cegar_box_jumps assumptions w0 tail solver valuation dias' hist _ cegar_box
 
         (* JUMP fail: RESTART *)
         | Solution.Unsat core =>
@@ -407,29 +409,19 @@ Program Fixpoint cegar_box_jumps
           (* negate the whole thing to become a cpl clause, interpreted as a disjunction *)
           let solver := CplSolver.add_conflict_set solver conflict_set in
           (* recursion: RESTART *)
-          cegar_box assumptions (w0::tail) solver ((VA.make valuation conflict_set _ _)::val_hist) _ _
+          cegar_box assumptions (w0::tail) solver ((VA.make valuation conflict_set _ _)::hist) _ _
         end
       end
   end.
-(** Recursion NEXT UNFIRED: tail equal, dias decreasing *)
-Next Obligation.
-  right. subst dias. cbn. lia.
-Qed.
 (** Conditions met for above recursion. *)
 Next Obligation.
   constructor.
-  - cbn. now subst next_cpls.
   - cbn. apply I.
-  - apply SetoidList.NoDupA_nil.
-  - apply inclA_nil.
+  - cbn. now subst next_cpls.
 Qed.
 (** Recursion JUMP: tail decreasing *)
 Next Obligation.
   left. cbn. lia.
-Qed.
-(** Recursion NEXT FIRED: tail equal, dias decreasing *)
-Next Obligation.
-  right. subst dias. cbn. lia.
 Qed.
 (** Recursion RESTART: valid valuation attempt: conflict set non-empty *)
 Next Obligation.
@@ -448,19 +440,11 @@ Next Obligation with try easy; auto.
   assert (CplSolver.solver_axioms solver0) as Hsolver. { subst solver0. apply VA.make_solver_axioms. }
 
   constructor; cbn.
-  - subst solver solver0. unfold CplSolver.make_with_clauses. reflexivity.
   - subst solver0. split...
-  - cbn. apply SetoidList.NoDupA_cons...
-  - cbn. apply inclA_cons; [|split].
-    + exact Valuation.eq_equivalence.
-    + apply failed_val_in_solver'_vals...
-      apply (conflict_set_incl_val w0 valuation c core solver0 assumptions)...
-    + unfold solver.
-      apply val_hist_incl_solver' with (val:=valuation)...
-      apply (conflict_set_incl_val w0 valuation c core solver0 assumptions)...
+  - subst solver solver0. unfold CplSolver.make_with_clauses. reflexivity.
 Qed.
 (** RESTART decreasing: tail equal, possible valuations decreasing *)
-Next Obligation with try easy; auto.
+Next Obligation with try easy; auto using Valuation.eq_equivalence.
   (* the actually hard part *)
   right. cbn.
   destruct conds.
@@ -468,8 +452,7 @@ Next Obligation with try easy; auto.
   assert (CplSolver.solver_axioms solver0) as Hsolver0.
   { subst solver0. apply VA.make_solver_axioms. }
 
-  assert (forall (n m r : nat), n = m -> r < n -> n - S r < m - r) as sub_S_lt by (intros; lia).
-  apply sub_S_lt; clear sub_S_lt.
+  apply sub_S_lt.
 
   (* Every possible valuation of solver and solver0 are equal. *)
   - subst solver. apply PermutationA_length with (eqA := Valuation.eq).
@@ -482,38 +465,31 @@ Next Obligation with try easy; auto.
 
       [<=] is easy. Prove [<>] by contradiction. *)
   - apply Nat.le_neq. split.
-    + rewrite <- List.length_map with (f:=VA.val_attempt).
+    + rewrite <- List.length_map with (f:=VA.failed_val).
       apply NoDupA_incl_length with (eqA := Valuation.eq).
       * exact Valuation.eq_equivalence.
-      * exact val_hist_nodup.
-      * apply val_hist_incl_solver' with (val:=valuation)...
-        apply (conflict_set_incl_val w0 valuation c core solver0 assumptions)...
+      * eapply val_hist_nodup. exact attempts_from_solutions.
+      * subst solver0. apply val_hist_incl_solver...
 
     (* length val hist [<>] length every valuation *)
-    + rewrite <- List.length_map with (f:=VA.val_attempt).
+    + rewrite <- List.length_map with (f:=VA.failed_val).
       (* assume length val hist = length every valuation *)
       intro Hlength.
       (* then val hist is a permutation of every valuation *)
-      assert (PermutationA Valuation.eq (List.map VA.val_attempt val_hist) (CplSolver.every_valuation solver assumptions)) as H.
+      assert (PermutationA Valuation.eq (List.map VA.failed_val hist) (CplSolver.every_valuation solver0 assumptions)) as H.
       {
         apply NoDup_PermutationA_bis.
         - exact Valuation.eq_equivalence.
-        - apply val_hist_nodup.
+        - eapply val_hist_nodup. exact attempts_from_solutions.
         - apply CplSolver.every_valuation_nodup.
         - apply Nat.eq_le_incl. now rewrite Hlength.
-        - apply val_hist_incl_solver' with (val:=valuation)...
-          apply (conflict_set_incl_val w0 valuation c core solver0 assumptions)...
+        - subst solver0. apply val_hist_incl_solver...
       }
       (* contradiction by showing that valuation must be in val hist, but we assumed it isn't *)
-      apply val_not_in_hist.
-      apply PermutationA_inA with (l:=CplSolver.every_valuation solver assumptions)...
-      { exact Valuation.eq_equivalence. }
-      apply failed_val_in_solver'_vals...
-      apply (conflict_set_incl_val w0 valuation c core solver0 assumptions)...
-Qed.
-(** lexnat2_lt is well founded *)
-Next Obligation.
-  unfold MR. apply wf_inverse_image. exact lexnat2_lt_wf.
+      apply (new_val_not_in_hist hist (Lclauses.cpls w0) assumptions valuation)...
+      { subst solver0. exact solver_sat_val. }
+      apply PermutationA_inA with (l:=CplSolver.every_valuation solver0 assumptions)...
+      apply CplSolver.valuation_in_every_valuation_of...
 Qed.
 
 
@@ -521,12 +497,12 @@ Program Fixpoint cegar_box
   (assumptions : Assumptions.t)
   (phi : Mchain.t)
   (solver : CplSolver.t)
-  (val_hist : list VA.t)
-  (conds : LocalConds.t assumptions phi solver val_hist)
+  (hist : list VA.t)
+  (conds : LocalConds.t assumptions phi solver hist)
   {measure (
     List.length phi,
     (* remaining number of possible valuations *)
-    List.length (CplSolver.every_valuation solver assumptions) - List.length val_hist
+    List.length (CplSolver.every_valuation solver assumptions) - List.length hist
   ) lexnat2_lt}
 
   : Solution.t
@@ -540,7 +516,7 @@ Program Fixpoint cegar_box
     (* any fired box clauses would be trivially satisfiable by non-existence of next world. *)
     | [] => Solution.Sat
     | w0 :: tail =>
-      cegar_box_jumps assumptions w0 tail solver valuation (Lclauses.dias w0) (val_hist) _ cegar_box
+      cegar_box_jumps assumptions w0 tail solver valuation (Lclauses.dias w0) hist _ cegar_box
     end
   end.
 (** Recursion conditions met *)
@@ -548,20 +524,7 @@ Next Obligation
   with try easy; auto using Valuation.eq_equivalence.
   subst phi filtered_var.
   destruct conds.
-  constructor.
-  - now subst solver.
-  - assumption.
-  - assumption.
-  - assumption.
-  - assumption.
-  (* New valuation not in val hist. *)
-  - clear cegar_box.
-    rename Heq_anonymous into Hval.
-    cbn [first_cpls] in *.
-    set (extra_constraints := @nil CplClause.t).
-    apply new_val_not_in_hist with assumptions w0 extra_constraints...
-    + subst solver. assumption.
-    + subst extra_constraints. cbn. subst solver. assumption.
+  constructor...
 Qed.
 (** Definition of cegar_box matches the type def in cegar_box_jumps *)
 Next Obligation.
@@ -580,10 +543,8 @@ Program Definition solve_mchain (phi : Mchain.t) : Solution.t :=
 (** Base cases hold. *)
 Next Obligation.
   constructor.
-  - cbn. subst cpls. reflexivity.
   - cbn. apply I.
-  - apply SetoidList.NoDupA_nil.
-  - apply inclA_nil.
+  - cbn. subst cpls. reflexivity.
 Qed.
 
 

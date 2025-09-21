@@ -29,7 +29,7 @@ To run,
 
 ```sh
 cd cegarbox
-dune exec cegarbox [file1 [file2 [...]]]
+dune exec --profile release cegarbox -- file1 [file2 [...]]
 ```
 
 Where each of the files is a formula in InToHyLo format.
@@ -56,8 +56,3 @@ Thanks to [Ian Shillito](https://github.com/ianshil) for helpful instructions on
 Most styling and custom features from [CoqdocJS](https://github.com/rocq-community/coqdocjs).
 
 The OCaml lexer and parser are from https://github.com/jogiet/MOLOSS.
-The problems in `data` are from MOLOSS as well.
-
-Extra problems can be found at [mdk-verifier](https://www.cril.univ-artois.fr/~montmirail/mdk-verifier/) ([paper](https://www.researchgate.net/publication/304783698_On_Checking_Kripke_Models_for_Modal_Logic_K)).
-However, many of them are far too big for the current implementation to solve in a reasonable amount of time.
-The current solver can solve the ones up to around level `3`.

@@ -17,7 +17,7 @@ Proof.
 Qed.
 
 
-Lemma inA_flat_map : forall {A B} (eqB : relation B) (f : A -> list B) (l : list A) (y : B),
+Lemma InA_flat_map : forall {A B} (eqB : relation B) (f : A -> list B) (l : list A) (y : B),
   InA eqB y (List.flat_map f l) <-> (exists x : A, List.In x l /\ InA eqB y (f x)).
 Proof.
   intros.

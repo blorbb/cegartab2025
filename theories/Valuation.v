@@ -259,7 +259,7 @@ Section AllValuations.
     - intros val Hperm. unfold val_in_vals in *.
       cbn.
 
-      apply inA_flat_map.
+      apply InA_flat_map.
 
       (* destruct val into a permutation of l::ls *)
       apply Permutation_map_inv in Hperm.
@@ -347,7 +347,7 @@ Section AllValuations.
         * apply List.in_eq.
         * now apply (lit_in_atm_in (Lit.Pos atm)).
       + inversion_clear IHatms. rename H into Hv_nin_vals, H0 into Hvals_nd.
-        apply inA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
+        apply InA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
         apply InA_length_2 in Hin as [Heq | Heq].
         * apply Hv_nin_vals.
           unfold eq in Heq. apply Permutation_cons_inv in Heq.
@@ -362,7 +362,7 @@ Section AllValuations.
     (* Almost the same as the second case of the above. *)
     - intro Hin_atms.
       inversion_clear IHatms. rename H into Hv_nin_vals, H0 into Hvals_nd.
-        apply inA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
+        apply InA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
         apply InA_length_2 in Hin as [Heq | Heq].
         + unfold eq in Heq.
           symmetry in Heq.

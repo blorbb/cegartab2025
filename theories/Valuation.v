@@ -1,5 +1,5 @@
-From Stdlib Require List SetoidList Permutation.
-From Stdlib Require Import Relations RelationClasses Permutation SetoidPermutation.
+From Stdlib Require List.
+From Stdlib Require Import Relations RelationClasses Permutation SetoidPermutation SetoidList Permutation.
 From CegarTableaux Require Lit.
 From CegarTableaux Require Import ListExt Utils.
 Import List.ListNotations.
@@ -11,7 +11,7 @@ Definition t := list Lit.t.
 
 
 (** Every atom must appear at most once. *)
-Definition clash_free (val : t) := SetoidList.NoDupA Lit.eq_atm val.
+Definition clash_free (val : t) := NoDupA Lit.eq_atm val.
 
 
 Definition atms_of (val : t) := List.map Lit.atm val.
@@ -26,7 +26,7 @@ Arguments In x val /.
 
 
 Lemma clash_free_nil : clash_free [].
-Proof. unfold clash_free. apply SetoidList.NoDupA_nil. Qed.
+Proof. unfold clash_free. apply NoDupA_nil. Qed.
 
 
 Lemma atms_of_nodup : forall (val : t), clash_free val -> List.NoDup (atms_of val).
@@ -41,7 +41,7 @@ Proof.
       destruct H as [x [Hxl Hx_in_val']].
       apply Hl_notin.
       unfold Lit.eq_atm.
-      apply SetoidList.InA_alt. exists x. easy.
+      apply InA_alt. exists x. easy.
     + exact IH.
 Qed.
 
@@ -51,7 +51,7 @@ Lemma clash_free_no_negation : forall l val,
 Proof with try easy; auto.
   intros l val Hcf Hl_in Hnl_in.
   unfold clash_free in Hcf.
-  apply SetoidList.NoDupA_altdef in Hcf.
+  apply NoDupA_altdef in Hcf.
   apply List.ForallOrdPairs_In with (x:=l) (y:=Lit.negate l) in Hcf...
   destruct Hcf as [Hl_nl | [Hne | Hne]].
   - destruct l as [x|x]...
@@ -92,7 +92,7 @@ Qed.
 
 (** Set-equality of valuations *)
 Definition eq (a b : t) : Prop :=
-  Permutation.Permutation a b.
+  Permutation a b.
 
 (* coq can auto solve these *)
 Global Instance eq_equivalence : Equivalence eq := {}.
@@ -136,19 +136,22 @@ Qed.
 
 (** Generate every valuation from a set of atoms. *)
 Section AllValuations.
+  Local Definition cons_atm (p : nat) (v : t) :=
+    [ Lit.Pos p :: v ; Lit.Neg p :: v ].
+
+  Local Definition bind_atm (p : nat) (vals : list t) :=
+    List.flat_map (cons_atm p) vals.
+
   Fixpoint every_valuation_of_atms (atms : list nat) : list t :=
     match atms with
     | [] => [[]]
     | atm :: atms' =>
-      let rec := every_valuation_of_atms atms' in
-      List.flat_map
-        (fun val => [ Lit.Pos atm :: val ; Lit.Neg atm :: val ])
-        rec
+      bind_atm atm (every_valuation_of_atms atms')
     end.
 
 
   Definition val_in_vals (val : t) (vals : list t) : Prop :=
-    SetoidList.InA eq val vals.
+    InA eq val vals.
 
 
   (** Atoms of every valuation is exactly the input atms. *)
@@ -196,10 +199,10 @@ Section AllValuations.
       (* val = +atm :: val' or -atm :: val' *)
       destruct Hval_in_cons as [Hval_pos_val' | [Hval_neg_val' | F]]...
       + subst val. unfold clash_free in *.
-        apply SetoidList.NoDupA_cons...
+        apply NoDupA_cons...
         (* atm not in val' *)
         intro H.
-        rewrite SetoidList.InA_alt in H.
+        rewrite InA_alt in H.
         destruct H as [l [Hl_eq_atm Hl_in_val']].
         cbn in Hl_eq_atm.
         (* show that atm in atms *)
@@ -212,10 +215,10 @@ Section AllValuations.
         now apply List.in_map.
 
       + subst val. unfold clash_free in *.
-        apply SetoidList.NoDupA_cons...
+        apply NoDupA_cons...
         (* atm not in val' *)
         intro H.
-        rewrite SetoidList.InA_alt in H.
+        rewrite InA_alt in H.
         destruct H as [l [Hl_eq_atm Hl_in_val']].
         unfold Lit.eq_atm in Hl_eq_atm. cbn in Hl_eq_atm.
         (* show that atm in atms *)
@@ -229,52 +232,35 @@ Section AllValuations.
   Qed.
 
 
-  Lemma lits_in_every_of_lits : forall (ls : list Lit.t),
-    List.In ls (every_valuation_of_atms (atms_of ls)).
+  Lemma val_def_in_every_val : forall (val : Valuation.t),
+    List.In val (every_valuation_of_atms (atms_of val)).
   Proof.
-    intro ls. induction ls as [| l ls IH].
+    intro val. induction val as [| l val IH].
     - cbn. now left.
     - cbn. apply List.in_flat_map. cbn.
-      exists ls. split.
+      exists val. split.
       + exact IH.
       + destruct l as [x|x]; cbn; intuition.
   Qed.
 
 
-  Lemma val_of_atms_in_every_valuation :
+  Lemma val_with_atms_in_every_val :
     forall atms val,
       Permutation atms (atms_of val) ->
       val_in_vals val (every_valuation_of_atms atms).
-  Proof with auto.
-    intros atms.
-    induction atms as [| atm atms' IH].
-    - intros val Hperm.
-      cbn in *.
-      apply SetoidList.InA_singleton.
-      unfold eq.
-      apply Permutation_nil in Hperm.
-      apply List.map_eq_nil in Hperm.
-      subst val. apply perm_nil.
-    (* split the inA *)
-    - intros val Hperm. unfold val_in_vals in *.
-      cbn.
+  Proof with auto using eq_equivalence.
+    intros atms val Hperm.
+    unfold val_in_vals in *.
 
-      apply InA_flat_map.
+    (* turn atms into the atms of some permutation of val *)
+    apply Permutation_map_inv in Hperm.
+    destruct Hperm as [val' [Hval'_eq Hperm_val']].
+    subst atms.
 
-      (* destruct val into a permutation of l::ls *)
-      apply Permutation_map_inv in Hperm.
-      destruct Hperm as [val' [Hval'_eq Hperm_val']].
-      symmetry in Hval'_eq.
-      apply List.map_eq_cons in Hval'_eq.
-      destruct Hval'_eq as [l [ls [Hval'_eq [Hl_atm Hls_atms']]]].
-      subst atm atms' val'.
-
-      exists ls. split.
-      + apply lits_in_every_of_lits.
-      + apply SetoidList.InA_alt.
-        destruct l as [x|x].
-        * cbn. exists (Lit.Pos x :: ls)...
-        * cbn. exists (Lit.Neg x :: ls)...
+    apply InA_eqA with val'...
+    - unfold eq. now symmetry.
+    - apply In_InA...
+      apply val_def_in_every_val.
   Qed.
 
 
@@ -284,10 +270,10 @@ Section AllValuations.
   Proof with try easy; auto using Valuation.eq_equivalence.
     intros atms atms' Hperm.
     induction Hperm.
-    - cbn. constructor...
+    - reflexivity.
     - cbn. apply PermutationA_flat_map with (eqA := eq)...
       intros a a' Heq_aa'. repeat constructor...
-    - cbn.
+    - cbn [every_valuation_of_atms].
       set (vals := (every_valuation_of_atms l)).
       induction vals as [|v vals IHvals]...
       cbn.
@@ -312,72 +298,75 @@ Section AllValuations.
   Qed.
 
 
-  Lemma every_valuation_unique : forall (atms : list nat),
-    List.NoDup atms ->
-    SetoidList.NoDupA eq (every_valuation_of_atms atms).
+  Lemma bind_new_atm_unique : forall (vals : list t) (p : nat),
+    NoDupA eq vals ->
+    (* p is not in vals *)
+    (forall v, List.In v vals -> ~ In p v) ->
+    NoDupA eq (bind_atm p vals).
   Proof with try easy; auto using eq_equivalence.
-    intros atms Hnd.
-
-    induction Hnd as [|atm atms Hatm_nin Hatms_nd IHatms]; cbn.
-    { apply SetoidList.NoDupA_singleton. }
-
-    set (vals := every_valuation_of_atms atms) in *.
-
-    (* Need to perform induction on vals with enough information for the IH to be usable. *)
-    assert (forall v, List.In v vals -> ~ In atm v) as Hnin.
-    {
-      intros v Hv_in_vals Hatm_in_v.
-      apply Hatm_nin.
-      assert (atms = atms_of v) as Hatms.
-      { pose proof (every_valuation_exact_atms atms) as H. rewrite List.Forall_forall in H. apply H... }
-      unfold In in Hatm_in_v.
-      rewrite Hatms. assumption.
-    }
-    revert Hnin.
-
+    intros vals p Hnodup Hatm_nin_vals.
     induction vals as [|v vals IHvals]...
 
-    intros Hatm_nin_vals.
     cbn. repeat constructor.
-    - intro H. apply SetoidList.InA_cons in H as [Heq_atm | Hin_atms].
-      + apply Permutation_in with (x := Lit.Pos atm) in Heq_atm.
-        2: { apply List.in_eq. }
-        cbn in Heq_atm. destruct Heq_atm...
-        apply (Hatm_nin_vals v).
-        * apply List.in_eq.
-        * now apply (lit_in_atm_in (Lit.Pos atm)).
-      + inversion_clear IHatms. rename H into Hv_nin_vals, H0 into Hvals_nd.
+    - intro H. apply InA_cons in H as [Heq_atm | Hin_atms].
+      + pose proof (Permutation_heads_ne (Lit.Pos p) (Lit.Neg p) v) as H.
+        forward H by discriminate.
+        contradiction.
+      + inversion_clear Hnodup. rename H into Hv_nin_vals, H0 into Hvals_nd.
         apply InA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
+
+        unfold cons_atm in Hin.
         apply InA_length_2 in Hin as [Heq | Heq].
         * apply Hv_nin_vals.
           unfold eq in Heq. apply Permutation_cons_inv in Heq.
-          apply SetoidList.InA_eqA with (x:=v') (y:=v)...
-          apply SetoidList.In_InA...
+          apply InA_eqA with (x:=v') (y:=v)...
+          apply In_InA...
         * unfold eq in Heq.
           symmetry in Heq.
-          apply Permutation_heads_ne in Heq...
+          apply Permutation_ne_in in Heq...
           apply (Hatm_nin_vals v). { apply List.in_eq. }
-          apply (lit_in_atm_in (Lit.Neg atm))...
+          apply (lit_in_atm_in (Lit.Neg p))...
 
     (* Almost the same as the second case of the above. *)
     - intro Hin_atms.
-      inversion_clear IHatms. rename H into Hv_nin_vals, H0 into Hvals_nd.
+      inversion_clear Hnodup. rename H into Hv_nin_vals, H0 into Hvals_nd.
         apply InA_flat_map in Hin_atms as [v' [Hv'_in_vals Hin]].
         apply InA_length_2 in Hin as [Heq | Heq].
         + unfold eq in Heq.
           symmetry in Heq.
-          apply Permutation_heads_ne in Heq...
+          apply Permutation_ne_in in Heq...
           apply (Hatm_nin_vals v). { apply List.in_eq. }
-          apply (lit_in_atm_in (Lit.Pos atm))...
+          apply (lit_in_atm_in (Lit.Pos p))...
         + apply Hv_nin_vals.
           unfold eq in Heq. apply Permutation_cons_inv in Heq.
-          apply SetoidList.InA_eqA with (x:=v') (y:=v)...
-          apply SetoidList.In_InA...
+          apply InA_eqA with (x:=v') (y:=v)...
+          apply In_InA...
 
     - apply IHvals.
-      + now apply cons_NoDupA in IHatms.
+      + now apply cons_NoDupA in Hnodup.
       + intros v' Hv'_in_vals.
         apply Hatm_nin_vals.
         cbn. now right.
+  Qed.
+
+
+  Lemma every_valuation_unique : forall (atms : list nat),
+    List.NoDup atms ->
+    NoDupA eq (every_valuation_of_atms atms).
+  Proof with try easy; auto using eq_equivalence.
+    intros atms Hnd.
+
+    induction Hnd as [|atm atms Hatm_nin Hatms_nd IHatms]; cbn.
+    { apply NoDupA_singleton. }
+
+    set (vals := every_valuation_of_atms atms) in *.
+
+    apply bind_new_atm_unique...
+    intros v Hv_in_vals Hatm_in_v.
+    apply Hatm_nin.
+    assert (atms = atms_of v) as Hatms.
+    { pose proof (every_valuation_exact_atms atms) as H. rewrite List.Forall_forall in H. apply H... }
+    unfold In in Hatm_in_v.
+    rewrite Hatms. assumption.
   Qed.
 End AllValuations.

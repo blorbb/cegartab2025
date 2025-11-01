@@ -30,22 +30,22 @@ val conflict_set_of : Lclauses.t -> t -> Lit.t -> Lit.t list -> Lit.t list
 
 val first_cpls : Mchain.t -> CplClause.t list
 
-module VA :
+module HA :
  sig
   type t = { failed_val : Valuation.t; conflict_set : Lit.t list }
  end
 
 val cegar_box_jumps :
   Assumptions.t -> Lclauses.t -> Mchain.t -> CplSolver.t -> t -> DiaClause.t
-  list -> VA.t list -> (Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t list
+  list -> HA.t list -> (Assumptions.t -> Mchain.t -> CplSolver.t -> HA.t list
   -> __ -> __ -> Solution.t) -> Solution.t
 
 val cegar_box_func :
-  (Assumptions.t, (Mchain.t, (CplSolver.t, VA.t list) sigT) sigT) sigT ->
+  (Assumptions.t, (Mchain.t, (CplSolver.t, HA.t list) sigT) sigT) sigT ->
   Solution.t
 
 val cegar_box :
-  Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t list -> Solution.t
+  Assumptions.t -> Mchain.t -> CplSolver.t -> HA.t list -> Solution.t
 
 val solve_mchain : Mchain.t -> Solution.t
 

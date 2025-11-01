@@ -44,16 +44,16 @@ Section Conversion.
     | Mclause.Cpl cpl => [Lclauses.make [cpl] [] []]
     | Mclause.Box box => [Lclauses.make [] [box] []]
     | Mclause.Dia dia => [Lclauses.make [] [] [dia]]
-    | Mclause.Ctx phi => Lclauses.empty :: from_mclause phi
+    | Mclause.Ctx ctx => Lclauses.empty :: from_mclause ctx
     end.
 
-    (** Merge two [Mchain.t]'s together.
+  (** Merge two [Mchain.t]'s together.
 
-        This will retain all elements, and output a list the length of
-        the longer list. *)
+      This will retain all elements, and output a list the length of
+      the longer list. *)
   Local Fixpoint zip_merge (a b : t) : t :=
     match a, b with
-    | ha::ta, hb::tb => (Lclauses.merge ha hb) :: zip_merge ta tb
+    | ha::ta, hb::tb => Lclauses.merge ha hb :: zip_merge ta tb
     | a, [] => a
     | [], b => b
     end.
@@ -74,7 +74,7 @@ Section Correctness.
   Proof with auto; try tauto.
     intros W R M w0 phi. revert w0.
 
-    induction phi as 
+    induction phi as
       [ cpl
       | boxes
       | dias
@@ -133,38 +133,12 @@ Section Correctness.
     - cbn. intuition.
     - cbn. intuition.
     (* merge (ha::ta) (hb::tb) <-> (ha::ta) and (hb::tb) *)
-    - split.
-      (* forces (ha++hb) and zip_merge (ta++tb) *)
-      (* show ha::ta and hb::tb *)
-      + intros [Hhead Htail].
-        apply (Lclauses.force_merge_and ha hb) in Hhead.
-        cbn. split; split.
-        (* ha *)
-        * exact (proj1 Hhead).
-        (* ta *)
-        * intros nbr Hrel_nbr.
-          specialize (Htail nbr Hrel_nbr).
-          specialize (IHta nbr tb).
-          apply IHta in Htail.
-          exact (proj1 Htail).
-        (* hb *)
-        * exact (proj2 Hhead).
-        (* tb *)
-        * intros nbr Hrel_nbr.
-          specialize (Htail nbr Hrel_nbr).
-          apply IHta in Htail.
-          exact (proj2 Htail).
-
-      (* forces ha::ta and hb::tb *)
-      (* show forces (ha++hb) and merge (ta++tb) *)
-      + intros [HA HB]. cbn. split.
-        (* ha++hb *)
-        * apply (Lclauses.force_merge_and ha hb).
-          cbn in HA, HB. cbn. intuition.
-        (* merge ta tb *)
-        * intros nbr Hrel_nbr.
-          apply IHta.
-          cbn in HA, HB. intuition.
+    - cbn [zip_merge force].
+      rewrite Lclauses.force_merge_and.
+      setoid_rewrite IHta.
+      intuition.
+      + now apply H1.
+      + now apply H1.
   Qed.
 
 
@@ -174,18 +148,9 @@ Section Correctness.
     intros W R M w0 phi. revert w0.
 
     induction phi as [| head tail IHtail].
-    - simpl. intuition.
-
-    - intro w0. simpl. split.
-      + intros [Hforce_head Hforce_tail].
-        apply force_zip_and. split.
-        * apply mclause_equivalent...
-        * apply IHtail...
-
-      + rewrite force_zip_and.
-        intros [Hforce_head Hforce_tail].
-        split.
-        * apply mclause_equivalent...
-        * apply IHtail... 
+    - cbn. tauto.
+    - intro w0. cbn.
+      rewrite force_zip_and, mclause_equivalent, IHtail.
+      tauto.
   Qed.
 End Correctness.

@@ -1,8 +1,10 @@
 From Stdlib Require List.
 From CegarTableaux Require Kripke.
 
-(** A Kripke model with a tree structure. *)
+(** A Kripke model with a tree structure. 
 
+    This is currently unused, but would likely be helpful for formalising
+    soundness in the future, since we need to construct a satisfying model. *)
 Inductive t :=
   | cons
       (* A list of atoms which are true at the current world. *)

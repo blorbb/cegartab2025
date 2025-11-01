@@ -86,7 +86,7 @@ TODO: change MCNF procedures to use this type directly instead of MCNF.
 &nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="CegarTableaux.Mclause.html#Cpl"><span class="id" title="constructor">Mclause.Cpl</span></a> <span class="id" title="var">cpl</span> =&gt; <span class="id" title="notation">[</span><a class="idref" href="CegarTableaux.Lclauses.html#make"><span class="id" title="constructor">Lclauses.make</span></a> <span class="id" title="notation">[</span><span class="id" title="var">cpl</span><span class="id" title="notation">]</span> <span class="id" title="notation">[]</span> <span class="id" title="notation">[</span><span class="id" title="notation">]</span><span class="id" title="notation">]</span><br/>
     | <a class="idref" href="CegarTableaux.Mclause.html#Box"><span class="id" title="constructor">Mclause.Box</span></a> <span class="id" title="var">box</span> =&gt; <span class="id" title="notation">[</span><a class="idref" href="CegarTableaux.Lclauses.html#make"><span class="id" title="constructor">Lclauses.make</span></a> <span class="id" title="notation">[]</span> <span class="id" title="notation">[</span><span class="id" title="var">box</span><span class="id" title="notation">]</span> <span class="id" title="notation">[</span><span class="id" title="notation">]</span><span class="id" title="notation">]</span><br/>
     | <a class="idref" href="CegarTableaux.Mclause.html#Dia"><span class="id" title="constructor">Mclause.Dia</span></a> <span class="id" title="var">dia</span> =&gt; <span class="id" title="notation">[</span><a class="idref" href="CegarTableaux.Lclauses.html#make"><span class="id" title="constructor">Lclauses.make</span></a> <span class="id" title="notation">[]</span> <span class="id" title="notation">[]</span> <span class="id" title="notation">[</span><span class="id" title="var">dia</span><span class="id" title="notation">]]</span><br/>
-    | <a class="idref" href="CegarTableaux.Mclause.html#Ctx"><span class="id" title="constructor">Mclause.Ctx</span></a> <span class="id" title="var">phi</span> =&gt; <a class="idref" href="CegarTableaux.Lclauses.html#empty"><span class="id" title="definition">Lclauses.empty</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a> <a class="idref" href="CegarTableaux.Mchain.html#from_mclause:25"><span class="id" title="definition">from_mclause</span></a> <a class="idref" href="CegarTableaux.Mchain.html#phi:24"><span class="id" title="variable">phi</span></a><br/>
+    | <a class="idref" href="CegarTableaux.Mclause.html#Ctx"><span class="id" title="constructor">Mclause.Ctx</span></a> <span class="id" title="var">ctx</span> =&gt; <a class="idref" href="CegarTableaux.Lclauses.html#empty"><span class="id" title="definition">Lclauses.empty</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a> <a class="idref" href="CegarTableaux.Mchain.html#from_mclause:25"><span class="id" title="definition">from_mclause</span></a> <span class="id" title="var">ctx</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
@@ -97,13 +97,13 @@ Merge two <span class="inlinecode"><span class="id" title="var">Mchain.t</span><
 
 <div class="paragraph"> </div>
 
-        This will retain all elements, and output a list the length of
-        the longer list. 
+      This will retain all elements, and output a list the length of
+      the longer list. 
 </div>
 <div class="code">
 &nbsp;&nbsp;<span class="id" title="keyword">Local Fixpoint</span> <a id="zip_merge" class="idref" href="#zip_merge"><span class="id" title="definition">zip_merge</span></a> (<a id="a:27" class="idref" href="#a:27"><span class="id" title="binder">a</span></a> <a id="b:28" class="idref" href="#b:28"><span class="id" title="binder">b</span></a> : <a class="idref" href="CegarTableaux.Mchain.html#t"><span class="id" title="definition">t</span></a>) : <a class="idref" href="CegarTableaux.Mchain.html#t"><span class="id" title="definition">t</span></a> :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="CegarTableaux.Mchain.html#a:27"><span class="id" title="variable">a</span></a>, <a class="idref" href="CegarTableaux.Mchain.html#b:28"><span class="id" title="variable">b</span></a> <span class="id" title="keyword">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">ha</span><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a><span class="id" title="var">ta</span>, <span class="id" title="var">hb</span><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a><span class="id" title="var">tb</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">(</span></a><a class="idref" href="CegarTableaux.Lclauses.html#merge"><span class="id" title="definition">Lclauses.merge</span></a> <span class="id" title="var">ha</span> <span class="id" title="var">hb</span><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a> <a class="idref" href="CegarTableaux.Mchain.html#zip_merge:29"><span class="id" title="definition">zip_merge</span></a> <span class="id" title="var">ta</span> <span class="id" title="var">tb</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">ha</span><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a><span class="id" title="var">ta</span>, <span class="id" title="var">hb</span><a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a><span class="id" title="var">tb</span> =&gt; <a class="idref" href="CegarTableaux.Lclauses.html#merge"><span class="id" title="definition">Lclauses.merge</span></a> <span class="id" title="var">ha</span> <span class="id" title="var">hb</span> <a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Datatypes.html#::list_scope:x_'::'_x"><span class="id" title="notation">::</span></a> <a class="idref" href="CegarTableaux.Mchain.html#zip_merge:29"><span class="id" title="definition">zip_merge</span></a> <span class="id" title="var">ta</span> <span class="id" title="var">tb</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">a</span>, <span class="id" title="notation">[]</span> =&gt; <a class="idref" href="CegarTableaux.Mchain.html#a:27"><span class="id" title="variable">a</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="notation">[]</span>, <span class="id" title="var">b</span> =&gt; <a class="idref" href="CegarTableaux.Mchain.html#b:28"><span class="id" title="variable">b</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
@@ -130,7 +130,7 @@ Logical equivalence of the <span class="inlinecode"><a class="idref" href="Cegar
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">W</span> <span class="id" title="var">R</span> <span class="id" title="var">M</span> <span class="id" title="var">w0</span> <span class="id" title="var">phi</span>. <span class="id" title="var">revert</span> <span class="id" title="var">w0</span>.<br/>
 
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">cpl</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">boxes</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">dias</span><br/>
@@ -197,39 +197,12 @@ Logical equivalence of the <span class="inlinecode"><a class="idref" href="Cegar
 &nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">intuition</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">intuition</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;merge&nbsp;(ha::ta)&nbsp;(hb::tb)&nbsp;&lt;-&gt;&nbsp;(ha::ta)&nbsp;and&nbsp;(hb::tb)&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;forces&nbsp;(ha++hb)&nbsp;and&nbsp;zip_merge&nbsp;(ta++tb)&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;show&nbsp;ha::ta&nbsp;and&nbsp;hb::tb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> [<span class="id" title="var">Hhead</span> <span class="id" title="var">Htail</span>].<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<a class="idref" href="CegarTableaux.Lclauses.html#force_merge_and"><span class="id" title="lemma">Lclauses.force_merge_and</span></a> <span class="id" title="var">ha</span> <span class="id" title="var">hb</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">Hhead</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;ha&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#proj1"><span class="id" title="lemma">proj1</span></a> <span class="id" title="var">Hhead</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;ta&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">nbr</span> <span class="id" title="var">Hrel_nbr</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">Htail</span> <span class="id" title="var">nbr</span> <span class="id" title="var">Hrel_nbr</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">IHta</span> <span class="id" title="var">nbr</span> <span class="id" title="var">tb</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHta</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Htail</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#proj1"><span class="id" title="lemma">proj1</span></a> <span class="id" title="var">Htail</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;hb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#proj2"><span class="id" title="lemma">proj2</span></a> <span class="id" title="var">Hhead</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;tb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">nbr</span> <span class="id" title="var">Hrel_nbr</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">Htail</span> <span class="id" title="var">nbr</span> <span class="id" title="var">Hrel_nbr</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHta</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Htail</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<a class="idref" href="http://coq.inria.fr/doc/V9.0.0/stdlib//Corelib.Init.Logic.html#proj2"><span class="id" title="lemma">proj2</span></a> <span class="id" title="var">Htail</span>).<br/>
-
-<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;forces&nbsp;ha::ta&nbsp;and&nbsp;hb::tb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;show&nbsp;forces&nbsp;(ha++hb)&nbsp;and&nbsp;merge&nbsp;(ta++tb)&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> [<span class="id" title="var">HA</span> <span class="id" title="var">HB</span>]. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;ha++hb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> (<a class="idref" href="CegarTableaux.Lclauses.html#force_merge_and"><span class="id" title="lemma">Lclauses.force_merge_and</span></a> <span class="id" title="var">ha</span> <span class="id" title="var">hb</span>).<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">HA</span>, <span class="id" title="var">HB</span>. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">intuition</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;merge&nbsp;ta&nbsp;tb&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">nbr</span> <span class="id" title="var">Hrel_nbr</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHta</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">HA</span>, <span class="id" title="var">HB</span>. <span class="id" title="tactic">intuition</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span> [<a class="idref" href="CegarTableaux.Mchain.html#zip_merge"><span class="id" title="definition">zip_merge</span></a> <a class="idref" href="CegarTableaux.Mchain.html#force"><span class="id" title="definition">force</span></a>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.Lclauses.html#force_merge_and"><span class="id" title="lemma">Lclauses.force_merge_and</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">setoid_rewrite</span> <span class="id" title="var">IHta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intuition</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">now</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">now</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
@@ -240,21 +213,10 @@ Logical equivalence of the <span class="inlinecode"><a class="idref" href="Cegar
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">phi</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">head</span> <span class="id" title="var">tail</span> <span class="id" title="var">IHtail</span>].<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intuition</span>.<br/>
-
-<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">w0</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> [<span class="id" title="var">Hforce_head</span> <span class="id" title="var">Hforce_tail</span>].<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Mchain.html#force_zip_and"><span class="id" title="lemma">force_zip_and</span></a>. <span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Mchain.html#mclause_equivalent"><span class="id" title="lemma">mclause_equivalent</span></a>...<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">IHtail</span>...<br/>
-
-<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.Mchain.html#force_zip_and"><span class="id" title="lemma">force_zip_and</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">Hforce_head</span> <span class="id" title="var">Hforce_tail</span>].<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <a class="idref" href="CegarTableaux.Mchain.html#mclause_equivalent"><span class="id" title="lemma">mclause_equivalent</span></a>...<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">IHtail</span>...<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span>. <span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">w0</span>. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="CegarTableaux.Mchain.html#force_zip_and"><span class="id" title="lemma">force_zip_and</span></a>, <a class="idref" href="CegarTableaux.Mchain.html#mclause_equivalent"><span class="id" title="lemma">mclause_equivalent</span></a>, <span class="id" title="var">IHtail</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="CegarTableaux.Mchain.html#Correctness"><span class="id" title="section">Correctness</span></a>.<br/>
 </div>

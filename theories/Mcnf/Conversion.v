@@ -2,7 +2,6 @@
 
     We use the term 'surrogate' to mean an unused atom value. *)
 
-From Stdlib Require Import PeanoNat Setoids.Setoid Classical Lia.
 From Stdlib Require List.
 
 From CegarTableaux Require Lit Nnf Kripke Mclause Mcnf.Mcnf.

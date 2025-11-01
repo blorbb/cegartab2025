@@ -1,12 +1,12 @@
 # Formalised CEGAR-Tableaux
 
-WIP.
-
 See the rendered Rocq documentation at https://blorbb.github.io/cegartab2025/toc.html.
 
 ## Usage
 
-Rocq proofs in `theories/`. OCaml extraction and bindings in `cegarbox/`.
+Rocq proofs in `theories/`.
+OCaml is extracted to `cegarbox/lib`.
+The unverified code for binding to MiniSat can be found in `cegarbox/lib/bindings.ml`.
 
 Requires Rocq 9.0.0 and OCaml 5.3.0.
 
@@ -33,7 +33,7 @@ dune exec --profile release cegarbox -- file1 [file2 [...]]
 ```
 
 Where each of the files is a formula in InToHyLo format.
-A bunch of example formulae are provided in `cegarbox/data` which should all provide a SAT result.
+We recommend using [LWB-benchmark-generator](https://github.com/cormackikkert/LWB-benchmark-generator) to make some example inputs.
 
 ### Compiling
 

@@ -47,15 +47,15 @@ let first_cpls = function
 | [] -> []
 | w0 :: _ -> w0.cpls
 
-module VA =
+module HA =
  struct
   type t = { failed_val : Valuation.t; conflict_set : Lit.t list }
  end
 
 (** val cegar_box_jumps :
     Assumptions.t -> Lclauses.t -> Mchain.t -> CplSolver.t -> t ->
-    DiaClause.t list -> VA.t list -> (Assumptions.t -> Mchain.t ->
-    CplSolver.t -> VA.t list -> __ -> __ -> Solution.t) -> Solution.t **)
+    DiaClause.t list -> HA.t list -> (Assumptions.t -> Mchain.t ->
+    CplSolver.t -> HA.t list -> __ -> __ -> Solution.t) -> Solution.t **)
 
 let rec cegar_box_jumps assumptions w0 tail solver valuation dias0 hist cegar_box0 =
   match dias0 with
@@ -80,13 +80,13 @@ let rec cegar_box_jumps assumptions w0 tail solver valuation dias0 hist cegar_bo
           | Solution.Unsat core ->
             let conflict_set0 = conflict_set_of w0 valuation c core in
             let solver0 = add_conflict_set solver conflict_set0 in
-            cegar_box0 assumptions (w0 :: tail) solver0 ({ VA.failed_val =
-              valuation; VA.conflict_set = conflict_set0 } :: hist) __ __)
+            cegar_box0 assumptions (w0 :: tail) solver0 ({ HA.failed_val =
+              valuation; HA.conflict_set = conflict_set0 } :: hist) __ __)
     else cegar_box_jumps assumptions w0 tail solver valuation dias' hist
            cegar_box0
 
 (** val cegar_box_func :
-    (Assumptions.t, (Mchain.t, (CplSolver.t, VA.t list) sigT) sigT) sigT ->
+    (Assumptions.t, (Mchain.t, (CplSolver.t, HA.t list) sigT) sigT) sigT ->
     Solution.t **)
 
 let cegar_box_func =
@@ -110,7 +110,7 @@ let cegar_box_func =
      | Unsat core -> Solution.Unsat core))
 
 (** val cegar_box :
-    Assumptions.t -> Mchain.t -> CplSolver.t -> VA.t list -> Solution.t **)
+    Assumptions.t -> Mchain.t -> CplSolver.t -> HA.t list -> Solution.t **)
 
 let cegar_box assumptions phi solver hist =
   cegar_box_func (Coq_existT (assumptions, (Coq_existT (phi, (Coq_existT

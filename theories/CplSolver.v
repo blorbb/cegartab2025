@@ -23,11 +23,11 @@
     Something similar to {{https://github.com/Lysxia/coq-simple-io} coq-simple-io}
     may help with extracting to use the [IO] monad. *)
 
-From Stdlib Require List SetoidList.
+From Stdlib Require List.
 From CegarTableaux Require CplClause Assumptions Lit Cnf Valuation.
 From CegarTableaux Require Import Utils.
 From CegarTableaux.CplSolver Require Solution.
-From Stdlib Require Import Permutation SetoidPermutation.
+From Stdlib Require Import Permutation SetoidPermutation SetoidList.
 Import List.ListNotations.
 Open Scope list_scope.
 
@@ -202,7 +202,7 @@ Proof.
 Qed.
 
 
-Lemma every_valuation_nodup : forall solver assumptions, SetoidList.NoDupA Valuation.eq (every_valuation solver assumptions).
+Lemma every_valuation_nodup : forall solver assumptions, NoDupA Valuation.eq (every_valuation solver assumptions).
 Proof.
   intros. apply Valuation.every_valuation_unique, atms_of_nodup.
 Qed.
@@ -213,7 +213,7 @@ Lemma valuation_in_every_valuation_of :
   forall (solver : t) (assumptions : Assumptions.t) (valuation : Valuation.t),
   solver_axioms solver ->
   Solution.Sat valuation = solve_with_assumptions solver assumptions ->
-  SetoidList.InA Valuation.eq
+  InA Valuation.eq
       valuation
       (every_valuation solver assumptions).
 Proof.
@@ -221,9 +221,9 @@ Proof.
   unfold every_valuation, atms_of.
   set (atms := Cnf.atms_of _).
   pose proof (valuation_clash_free _ _ Hsat) as Hsound.
-  apply Valuation.val_of_atms_in_every_valuation.
+  apply Valuation.val_with_atms_in_every_val.
   (* atms is permutation of atms of val *)
-  apply Permutation.NoDup_Permutation.
+  apply NoDup_Permutation.
   - unfold atms, Cnf.atms_of. apply List.NoDup_nodup.
   - apply Valuation.atms_of_nodup. exact Hsound.
   - setoid_rewrite (valuation_in_clauses assumptions val Hsat).
@@ -312,11 +312,9 @@ Proof with auto; try easy.
 
   destruct Hsound as [W [R [M [w0 [Hval_match Hforce]]]]].
 
-  (* M w0 |= solved_clauses solver' *)
-  unfold solved_clauses, add_conflict_set in Hforce.
-  (* TODO: use cnf force_app *)
-  (* isolate forcing ~conflict set *)
-  (* ignore assumptions *)
+  (* M w0 |= clauses_of solver' *)
+  (* isolate just the conflict set *)
+  cbn in Hforce.
   unfold Cnf.force in Hforce.
   rewrite List.Forall_forall in Hforce.
   specialize (Hforce (List.map Lit.negate conflict_set) Hcs_in_solver').

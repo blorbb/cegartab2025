@@ -1,7 +1,6 @@
 (** A collection of useful tactics / misc. *)
 
-From Stdlib Require Import PeanoNat Arith Lia Classical Permutation Relations RelationClasses SetoidPermutation.
-From Stdlib Require SetoidList.
+From Stdlib Require Import PeanoNat Arith Lia.
 Import List.ListNotations.
 Open Scope list_scope.
 

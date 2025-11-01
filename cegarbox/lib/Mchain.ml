@@ -10,7 +10,7 @@ let rec from_mclause = function
 | Cpl cpl -> { cpls = (cpl :: []); boxes = []; dias = [] } :: []
 | Box box -> { cpls = []; boxes = (box :: []); dias = [] } :: []
 | Dia dia -> { cpls = []; boxes = []; dias = (dia :: []) } :: []
-| Ctx phi0 -> empty :: (from_mclause phi0)
+| Ctx ctx -> empty :: (from_mclause ctx)
 
 (** val zip_merge : t -> t -> t **)
 

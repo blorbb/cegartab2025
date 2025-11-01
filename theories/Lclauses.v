@@ -7,22 +7,23 @@ Open Scope list_scope.
 
 (** Set of clauses at the current world. *)
 Record t : Type := make {
-  cpls : list CplClause.t;
+  cpls  : list CplClause.t;
   boxes : list BoxClause.t;
-  dias : list DiaClause.t;
+  dias  : list DiaClause.t;
 }.
 
 Definition empty := make [] [] [].
 
 
 (** Merge two sets of local clauses into one. *)
-Definition merge A B := make (cpls A ++ cpls B) (boxes A ++ boxes B) (dias A ++ dias B).
+Definition merge (a b : t) : t :=
+  make (cpls a ++ cpls b) (boxes a ++ boxes b) (dias a ++ dias b).
 
 
 Definition force {W} {R} (M : @Kripke.t W R) (w0 : W) (phi : t) : Prop :=
-  List.Forall (CplClause.force M w0) phi.(cpls) /\
-  List.Forall (BoxClause.force M w0) phi.(boxes) /\
-  List.Forall (DiaClause.force M w0) phi.(dias).
+  List.Forall (CplClause.force M w0) (cpls phi) /\
+  List.Forall (BoxClause.force M w0) (boxes phi) /\
+  List.Forall (DiaClause.force M w0) (dias phi).
 
 Arguments force {W R} M w0 phi /.
 

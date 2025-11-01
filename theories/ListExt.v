@@ -121,7 +121,7 @@ Proof with try easy.
 Qed.
 
 
-(* TODO: classic should not be required. *)
+(* TODO: can probably prove this without [classic]. *)
 Lemma NoDupA_length_incl : forall {A} (eqA : relation A) (l l' : list A),
   Equivalence eqA ->
   NoDupA eqA l ->
@@ -203,14 +203,14 @@ Qed.
 (** Equivalent of [NoDup_concat] for setoid equality. *)
 Lemma NoDupA_concat : forall {A} (eqA : relation A) (l : list (list A)),
   Equivalence eqA ->
-  List.Forall (SetoidList.NoDupA eqA) l ->
-  List.ForallOrdPairs (fun l1 l2 => forall a, SetoidList.InA eqA a l1 -> ~ SetoidList.InA eqA a l2) l ->
-  SetoidList.NoDupA eqA (List.concat l).
+  List.Forall (NoDupA eqA) l ->
+  List.ForallOrdPairs (fun l1 l2 => forall a, InA eqA a l1 -> ~ InA eqA a l2) l ->
+  NoDupA eqA (List.concat l).
 Proof.
   intros A eqA l Hequiv Hforall Hfop.
   induction l as [|h t IH].
   { constructor. }
-  cbn. apply SetoidList.NoDupA_app.
+  cbn. apply NoDupA_app.
   - exact Hequiv.
   - now apply List.Forall_inv in Hforall.
   - apply IH.
@@ -225,12 +225,12 @@ Qed.
 
 Lemma NoDupA_length_2 : forall {A} (eqA : relation A) (x y : A),
   ~ eqA x y ->
-  SetoidList.NoDupA eqA [x ; y].
+  NoDupA eqA [x ; y].
 Proof.
   intros A eqA x y Hneq.
   repeat constructor.
-  - rewrite SetoidList.InA_singleton. assumption.
-  - intro H. apply SetoidList.InA_nil in H. contradiction.
+  - rewrite InA_singleton. assumption.
+  - intro H. apply InA_nil in H. contradiction.
 Qed.
 
 
@@ -242,7 +242,24 @@ Proof.
 Qed.
 
 
-Lemma Permutation_heads_ne : forall {A} (a b : A) (l l' : list A),
+Lemma Permutation_heads_ne : forall {A} (a b : A) (l : list A),
+  a <> b ->
+  ~ Permutation (a::l) (b::l).
+Proof.
+  intros A a b l Hne Hperm.
+  induction l as [| c l IH].
+  - apply Permutation_length_1 in Hperm. contradiction.
+  - apply IH.
+    apply Permutation_cons_inv with (a := c).
+    eapply perm_trans.
+    + apply perm_swap.
+    + eapply perm_trans.
+      * apply Hperm.
+      * apply perm_swap.
+Qed.
+
+
+Lemma Permutation_ne_in : forall {A} (a b : A) (l l' : list A),
   a <> b ->
   Permutation (a :: l) (b :: l') ->
   List.In a l'.

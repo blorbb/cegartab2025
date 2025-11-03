@@ -8,7 +8,7 @@ export COQDOCFLAGS
 PUBLIC_URL="https://blorbb.github.io/cegartab2025"
 SUBDIR_ROOTS := theories
 DIRS := . $(shell find $(SUBDIR_ROOTS) -type d)
-BUILD_PATTERNS := *.vok *.vos *.glob *.vo
+BUILD_PATTERNS := *.vok *.vos *.glob *.vo .*.aux
 BUILD_FILES := $(foreach DIR,$(DIRS),$(addprefix $(DIR)/,$(BUILD_PATTERNS)))
 
 _: makefile.rocq
